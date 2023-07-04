@@ -1,0 +1,31 @@
+.image-upload input {
+    display: none;
+}
+
+.image-upload img {
+    cursor: pointer;
+}
+
+.image-upload img:hover {
+    filter: grayscale(50%) blur(2px);
+}
+
+.div-scroll {
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    scroll-behavior: smooth;
+}
+
+.div-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.btn-flecha:hover {
+    background-color: rgb(186, 197, 219);
+    cursor: pointer;
+}
+
+.btn-flecha {
+    width: 42px;
+}

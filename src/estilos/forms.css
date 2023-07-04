@@ -1,0 +1,39 @@
+.resumen{
+    min-height: 100px;
+    overflow-y: auto;
+    max-height: 280px;
+}
+
+.max-height{
+    overflow-y: auto;
+    /* white-space: nowrap; */
+    max-height: 300px;
+}
+
+.focus:focus{
+    filter: drop-shadow(0px 0px 15px black);
+}
+
+.icono-placeholder::placeholder{
+    padding-left: 2rem;
+    background-image: url(../images/search.png);
+    filter: grayscale() opacity(50%);
+    background-size: 15px auto;
+    background-repeat: no-repeat;
+    background-position-y: center;
+    background-position: 0.5rem;
+}
+
+.icono-placeholder:focus{
+    color: transparent;
+}
+
+.hover{
+    cursor: pointer;
+}
+
+.hover:hover{
+    /* filter: contrast(20) */
+    filter: drop-shadow(0px 0px 15px black);
+
+}
