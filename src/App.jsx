@@ -1,5 +1,5 @@
 import './App.css'
-import './Style.css'
+import './style.css'
 import { Navbar } from './components/Navbar.jsx'
 import { LoginTKB } from './components/LoginTKB.jsx'
 import Clientes from './components/Clientes'
