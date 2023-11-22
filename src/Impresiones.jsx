@@ -1,21 +1,19 @@
 import React from 'react'
 import { ConectorPluginV3 } from './plugin'
-
-export const ImprimirTicket = (listaServicios = [], listaProductos = [], total, pagoEfectivo = 0, pagoTarjeta = 0, pagoPts = 0, cliente, barber, pts) => {
-    console.log(cliente)
-
+export const ImprimirTicket = (idCobro, descuento, subtotal, listaServicios = [], listaProductos = [], total, pagoEfectivo = 0, pagoTarjeta = 0, pagoPts = 0, cliente, barber, pts) => {
     const date = new Date();
     const yyyy = date.getFullYear();
     let mm = date.getMonth() + 1; // Months start at 0!
     let dd = date.getUTCDate();
     if (dd < 10) dd = '0' + dd;
     if (mm < 10) mm = '0' + mm;
-    let hh = date.getHours() + 1
+    let hh = date.getHours()
     let min = date.getMinutes()
     let ss = date.getSeconds()
     if (hh < 10) hh = '0' + h;
     if (min < 10) min = '0' + min;
     if (ss < 10) ss = '0' + ss;
+
 
     const fechaFormateada = yyyy + '-' + mm + '-' + dd + ' ' + hh + ':' + min + ':' + ss;
 
@@ -24,7 +22,7 @@ export const ImprimirTicket = (listaServicios = [], listaProductos = [], total, 
         .Iniciar()
         .DeshabilitarElModoDeCaracteresChinos()
         .EstablecerAlineacion(ConectorPluginV3.ALINEACION_CENTRO)
-        .CargarImagenLocalEImprimir('C:/Users/TheKingBarber/Pictures/darkLogo.png', 0, 216)
+    conector.CargarImagenLocalEImprimir('C:/Users/TheKingBarber/Pictures/darkLogo.png', 0, 216)
         .Feed(1)
         .EscribirTexto("The King Barber\n")
         .TextoSegunPaginaDeCodigos(2, "cp850", "Av. Hidalgo 411, Teziutlán, Pue. 73800 Teziutlán Centro\n")
@@ -46,9 +44,18 @@ export const ImprimirTicket = (listaServicios = [], listaProductos = [], total, 
     })
     conector.EscribirTexto("________________________________\n")
         .EstablecerEnfatizado(true)
-        .EscribirTexto('TOTAL: $' + total + ".00\n\n")
-        .EstablecerEnfatizado(false)
-    if (pagoEfectivo > 0) conector.EscribirTexto('Pago en efectivo: $' + pagoEfectivo + ".00\n")
+    if (descuento > 0) {
+        conector.EscribirTexto('SUBTOTAL: $' + subtotal + ".00\n")
+            .EstablecerSubrayado(true)
+            .EscribirTexto('DESCUENTO: $' + descuento + ".00\n")
+            .EstablecerSubrayado(false)
+            .EscribirTexto('TOTAL: $' + (total) + '.00\n')
+        console.log('total: ' + total + '\ndescuento: ' + descuento + '\nsubtotal: ' + subtotal)
+    } else {
+        conector.EscribirTexto('TOTAL: $' + total + ".00\n")
+    }
+    conector.EstablecerEnfatizado(false)
+    if (pagoEfectivo > 0) conector.EscribirTexto('\nPago en efectivo: $' + pagoEfectivo + ".00\n")
     if (pagoTarjeta > 0) conector.EscribirTexto('Pago con tarjeta: $' + pagoTarjeta + ".00\n")
     if (pagoPts > 0) conector.EscribirTexto('Pago pts: ' + pagoPts + " pts. = $" + pagoPts / 2 + ".00\n")
     conector.Feed(1)
@@ -74,7 +81,7 @@ export const ImprimirTicket = (listaServicios = [], listaProductos = [], total, 
     }
 }
 
-export const ImprimirReporte = (total, efectivo = 0, tarjeta = 0, puntosCanjeados = 0, barber, retiros = [], ingresos = [], totalRetiros, totalIngresos) => {
+export const ImprimirReporte = (total, efectivo, tarjeta, puntosCanjeados, barber, retiros, ingresos, totalRetiros, totalIngresos) => {
     const date = new Date()
     let hh = date.getHours()
     let min = date.getMinutes()

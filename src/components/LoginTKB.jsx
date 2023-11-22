@@ -40,7 +40,7 @@ export const LoginTKB = ({ login }) => {
 
                             <form action="" onSubmit={iniciarSesion}>
                                 <div className="form-outline form-white mb-4">
-                                    <input type="text" id="typeEmailX" className="form-control form-control-lg"
+                                    <input autoFocus type="text" id="typeEmailX" className="form-control form-control-lg"
                                         value={usuario}
                                         onChange={changeUsuario}
                                     />
@@ -55,7 +55,7 @@ export const LoginTKB = ({ login }) => {
                                     <label className="form-label" htmlFor="typePasswordX">Contraseña</label>
                                 </div>
 
-                                <p className="small mb-3 pb-lg-2"><a className="text-white-50" href="#!">¿Olvidaste tu contraseña?</a></p>
+                                {/* <p className="small mb-3 pb-lg-2"><a className="text-white-50" href="#!">¿Olvidaste tu contraseña?</a></p> */}
 
                                 <button className="btn btn-outline-light btn-lg px-5" >Iniciar sesión</button>
 

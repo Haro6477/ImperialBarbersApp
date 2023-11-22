@@ -1,20 +1,20 @@
-.resumen{
+.resumen {
     min-height: 100px;
     overflow-y: auto;
     max-height: 280px;
 }
 
-.max-height{
+.max-height {
     overflow-y: auto;
     /* white-space: nowrap; */
     max-height: 300px;
 }
 
-.focus:focus{
+.focus:focus {
     filter: drop-shadow(0px 0px 15px black);
 }
 
-.icono-placeholder::placeholder{
+.icono-placeholder::placeholder {
     padding-left: 2rem;
     background-image: url(../images/search.png);
     filter: grayscale() opacity(50%);
@@ -24,16 +24,68 @@
     background-position: 0.5rem;
 }
 
-.icono-placeholder:focus{
+.icono-placeholder:focus {
     color: transparent;
 }
 
-.hover{
+.hover {
     cursor: pointer;
 }
 
-.hover:hover{
+.hover:hover {
     /* filter: contrast(20) */
     filter: drop-shadow(0px 0px 15px black);
+}
 
+.pointer {
+    cursor: pointer;
+}
+
+
+.background {
+    background: linear-gradient(to left, #9ea3fd, #e1e2ff);
+}
+
+
+
+.cumple {
+    background: 50% 100%/50% 50% no-repeat radial-gradient(ellipse at bottom, #86bfff, transparent, transparent);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: 10vw;
+    -webkit-animation: reveal 3000ms ease-in-out forwards 200ms, glow 2500ms linear infinite 2000ms;
+    animation: reveal 3000ms ease-in-out forwards 200ms, glow 2500ms linear infinite 2000ms;
+}
+
+@-webkit-keyframes reveal {
+    80% {
+        letter-spacing: 8px;
+    }
+
+    100% {
+        background-size: 300% 300%;
+    }
+}
+
+@keyframes reveal {
+    80% {
+        letter-spacing: 8px;
+    }
+
+    100% {
+        background-size: 300% 300%;
+    }
+}
+
+@-webkit-keyframes glow {
+    40% {
+        text-shadow: 0 0 8px #d759f7;
+    }
+}
+
+@keyframes glow {
+    40% {
+        text-shadow: 0 0 8px #345de2;
+    }
 }

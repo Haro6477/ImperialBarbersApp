@@ -8,6 +8,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css'
 import '@fortawesome/fontawesome-free/css/fontawesome.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.js'
 import axios from 'axios'
+import '@sweetalert2/theme-dark'
 
 window.axios = axios
 window.axios.defaults.withCredentials = true

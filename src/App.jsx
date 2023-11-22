@@ -20,25 +20,30 @@ function App() {
     const instruccion = server + '/auth/' + usuario + '/' + pass
     axios.get(instruccion).then((response) => {
       if (response.data[0]) {
-        empleado = response.data[0]
-        const cadena = server + '/permisos-usuario/' + empleado.id
-        axios.get(cadena).then((res2) => {
-          let permisos = []
-          res2.data.forEach(item => {
-            permisos.push(item.permiso)
-          });
-          empleado.permisos = permisos
-        }).then(() => {
-          setUser(empleado)
-        }).catch((error) => console.log(error))
-
+        setUser(response.data[0])
+        axios.get(`${server}/chequeo/${response.data[0].id}`).then((resGet) => {
+          if (!resGet.data[0]) {
+            axios.post(`${server}/create-chequeos`, {
+              idBarber: response.data[0].id
+            }).then((resCreate) => {
+              showAlert('Hora de llegada:\n' + (new Date).toLocaleTimeString('es-mx', {hour12:true}), 'success')
+            })
+          }
+        })
       } else {
         showAlert("Credenciales incorrectas", "error")
       }
     })
   }
 
-  const logout = () => setUser(null)
+  const logout = () => {
+    window.localStorage.clear()
+    setUser(null)
+  }
+
+  // window.addEventListener("beforeunload", function (e) {
+  //   logout()
+  // });
 
   return (
     <BrowserRouter>
@@ -53,12 +58,5 @@ function App() {
     </BrowserRouter>
   )
 }
-
-{/* <FormularioCliente/> */ }
-{/* {
-        !user.length > 0
-          ? <LoginTKB setUser={setUser}></LoginTKB>
-          : <FormularioCliente/>
-      } */}
 
 export default App

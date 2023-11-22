@@ -12,8 +12,8 @@ const Venta = ({ user }) => {
   const [servicios, setServicios] = useState([])
   const [clientes, setClientes] = useState([])
   const [empleados, setEmpleados] = useState([])
+  const [empleado, setEmpleado] = useState({})
   const [loading, setLoading] = useState(true)
-
   const [cumple, setCumple] = useState(false)
 
   const [txtCliente, setTxtCliente] = useState("")
@@ -24,11 +24,13 @@ const Venta = ({ user }) => {
   const [listaProductos, setListaProductos] = useState([])
   const [listaServicios, setListaServicios] = useState([])
   const [cantidad, setCantidad] = useState(1)
-  const [total, setTotal] = useState(0)
+  const [subtotal, setSubtotal] = useState(0)
   const [ptsAcumulados, setPtsAcumulados] = useState(0)
   const [metodoPago, setMetodoPago] = useState('e')
   const [idBarber, setIdBarber] = useState(user.id)
-  const [nombreBarber, setNombreBarber] = useState(user.nombre)
+  const [divider, setDivider] = useState(false)
+  const [descuento, setDescuento] = useState(0)
+  const [conDescuento, setConDescuento] = useState(false)
 
   // Montos de pago
   const [efectivo, setEfectivo] = useState(0)
@@ -41,6 +43,7 @@ const Venta = ({ user }) => {
   const dropProServ = document.getElementById("drop2")
   const tbody = document.getElementById("tbody")
   const spanPts = document.getElementById('spanPts')
+  const btnDividir = document.getElementById('btnDividir')
 
   const classInputNone = 'd-none'
   const classInputBlock = 'w-100 d-block form-select text-secondary'
@@ -55,6 +58,7 @@ const Venta = ({ user }) => {
   const getEmpleados = () => {
     axios.get(`${server}/empleados`).then((response) => {
       setEmpleados(response.data);
+      setEmpleado(response.data[0])
     })
   }
 
@@ -86,15 +90,31 @@ const Venta = ({ user }) => {
       : dropProServ.className = classInputBlock
   }
 
+  const obtenerEmpleado = (id) => {
+    setEmpleado(empleados.find((e) => e.id == id))
+  }
+
   const handleSubmit = () => {
     if (inputProServ.value == "") { return }
     dropClientes.className = classInputNone
     dropProServ.className = classInputNone
     const tr = document.createElement("tr")
+    // itemLista.tipo == 'p' ? tr.dataset.id = listaProductos.length : tr.dataset.id = listaServicios.length
     const tdCantidad = document.createElement("td")
     const tdConcepto = document.createElement("td")
     const tdPrecioUni = document.createElement("td")
     const tdSubtotal = document.createElement("td")
+    const tdDividir = document.createElement("td")
+    const selectDividir = document.getElementById('select-empleado').cloneNode(true)
+    selectDividir.className = 'form-select d-none'
+    itemLista.tipo == 'p' ? selectDividir.id = `p${listaProductos.length}` : selectDividir.id = `s${listaServicios.length}`
+    // selectDividir.addEventListener('change', (e) => {
+    //   itemLista.tipo == 'p'
+    //     ? listaProductos[listaProductos.length - 1].idBarber = e.target.value
+    //     : listaServicios[listaServicios.length - 1].idBarber = e.target.value
+    // })
+
+    tdDividir.appendChild(selectDividir)
     tdCantidad.innerText = cantidad
     tdConcepto.innerText = itemLista.nombre
     tdConcepto.className = 'text-start'
@@ -104,31 +124,32 @@ const Venta = ({ user }) => {
     tr.appendChild(tdConcepto)
     tr.appendChild(tdPrecioUni)
     tr.appendChild(tdSubtotal)
+    tr.appendChild(tdDividir)
     tbody.appendChild(tr)
     itemLista.cantidad = cantidad
     inputProServ.value = ""
     itemLista.tipo === 'p' ? setListaProductos(listaProductos.concat(itemLista)) : setListaServicios(listaServicios.concat(itemLista))
-    setTotal(total + itemLista.precio * cantidad)
+    setSubtotal(subtotal + itemLista.precio * cantidad)
     setPtsAcumulados(ptsAcumulados + itemLista.pts * cantidad)
     setItem({})
     setCantidad(1)
+    if (listaProductos.length + listaServicios.length >= 1) {
+      btnDividir.className = 'btn btn-danger'
+    }
   }
 
 
   const nuevoCobro = (() => {
     switch (metodoPago) {
       case 'e':
-        addCobro(cliente.id, total, ptsAcumulados, metodoPago, idBarber, user.id, total, 0, 0, listaProductos, listaServicios)
-        ImprimirTicket(listaServicios, listaProductos, total, total, tarjeta, pts, cliente.nombre, user.nombre, Math.trunc(cliente.pts + ptsAcumulados))
+        addCobro(cliente.nombre, empleado.nombre, cliente.pts, +descuento / 100 * +subtotal, subtotal, divider, getClientes, cliente.id, subtotal - descuento / 100 * subtotal, ptsAcumulados - descuento / 100 * ptsAcumulados, metodoPago, empleado.id, user.id, subtotal - +descuento / 100 * +subtotal, 0, 0, listaProductos, listaServicios)
         break;
       case 't':
-        addCobro(cliente.id, total, ptsAcumulados, metodoPago, idBarber, user.id, 0, total, 0, listaProductos, listaServicios)
-        ImprimirTicket(listaServicios, listaProductos, total, efectivo, total, pts, cliente.nombre, user.nombre, Math.trunc(cliente.pts + ptsAcumulados))
+        addCobro(cliente.nombre, empleado.nombre, cliente.pts, +descuento / 100 * +subtotal, subtotal, divider, getClientes, cliente.id, subtotal - descuento / 100 * subtotal, ptsAcumulados - descuento / 100 * ptsAcumulados, metodoPago, empleado.id, user.id, 0, subtotal - +descuento / 100 * +subtotal, 0, listaProductos, listaServicios)
         break;
       case 'p':
-        if (cliente.pts / 2 >= total) {
-          addCobro(cliente.id, total, 0, metodoPago, idBarber, user.id, 0, 0, total * 2, listaProductos, listaServicios)
-          ImprimirTicket(listaServicios, listaProductos, total, efectivo, tarjeta, total * 2, cliente.nombre, user.nombre, cliente.pts - total * 2)
+        if (cliente.pts / 2 >= subtotal) {
+          addCobro(cliente.nombre, empleado.nombre, cliente.pts, +descuento / 100 * +subtotal, subtotal, divider, getClientes, cliente.id, subtotal - descuento / 100 * subtotal, - pts, metodoPago, empleado.id, user.id, 0, 0, subtotal * 2 - +descuento / 100 * +subtotal, listaProductos, listaServicios)
         } else {
           showAlert("Puntos insuficientes", 'error')
           return
@@ -136,8 +157,7 @@ const Venta = ({ user }) => {
         break;
       default:
         if (cliente.pts >= pts) {
-          addCobro(cliente.id, total, ptsAcumulados * (1 - pts / total) - (total - (efectivo + tarjeta) / 2) / 10, metodoPago, idBarber, user.id, efectivo, tarjeta, pts, listaProductos, listaServicios)
-          ImprimirTicket(listaServicios, listaProductos, total, efectivo, tarjeta, pts, cliente.nombre, nombreBarber, cliente.pts + ptsAcumulados * (1 - pts / total) - pts)
+          addCobro(cliente.nombre, empleado.nombre, cliente.pts, +descuento / 100 * +subtotal, subtotal, divider, getClientes, cliente.id, subtotal - descuento / 100 * subtotal, ptsAcumulados - pts * 1.05 - descuento / 100 * ptsAcumulados, metodoPago, empleado.id, user.id, efectivo, tarjeta, pts, listaProductos, listaServicios)
         } else {
           showAlert("Puntos insuficientes", 'error')
           return
@@ -152,29 +172,74 @@ const Venta = ({ user }) => {
     inputProServ.value = ''
     setListaProductos([])
     setListaServicios([])
-    while (tbody.firstChild) {
-      tbody.removeChild(tbody.firstChild)
-    }
-    setTotal(0)
+    tbody.innerHTML = ''
+    setSubtotal(0)
+    setPtsAcumulados(0)
     inputCliente.focus()
+    spanPts.innerText = ''
+    document.getElementById('flexRadioDefault1').checked = true
+    setMetodoPago('e')
+    setEfectivo(0)
+    setTarjeta(0)
+    setPts(0)
+    setDescuento(0)
+    btnDividir.className = 'btn btn-danger'
+    btnDividir.innerText = 'Dividir'
+    const selects = document.getElementsByTagName('select')
+    for (let index = 2; index < selects.length - 1; index++) {
+      const element = selects[index];
+      element.className = 'd-none'
+    }
+    document.getElementById('select-empleado').className = 'form-select'
+    conDescuento && document.getElementById('btnDescuento').click()
   }
 
-  function setSize2() {
-    dropProServ.length < 7 ? dropProServ.size = dropProServ.length : dropProServ.size = 6
-    if (dropProServ.length == 0) dropProServ.classList = 'd-none'
+  const mostrarSelects = () => {
+    if (listaProductos.length + listaServicios.length < 2) return
+    if (divider) {
+      btnDividir.className = 'btn btn-danger'
+      btnDividir.innerText = 'Dividir'
+      const selects = document.getElementsByTagName('select')
+      for (let index = 2; index < selects.length - 1; index++) {
+        const element = selects[index];
+        element.className = 'd-none'
+      }
+      selects[selects.length - 1].className = 'form-select'
+    }
+    else {
+      btnDividir.className = 'btn btn-secondary'
+      btnDividir.innerText = 'Cancelar'
+      const selects = document.getElementsByTagName('select')
+      for (let index = 2; index < selects.length - 1; index++) {
+        const element = selects[index];
+        element.className = 'form-select'
+        element.id[0] == 'p'
+          ? element.addEventListener('change', (e) => {
+            let listPro = listaProductos
+            listPro[element.id.substring(1)].idBarber = e.target.value
+            setListaProductos(listPro.map(producto => producto))
+          })
+          : element.addEventListener('change', (e) => {
+            let listServ = listaServicios
+            listServ[element.id.substring(1)].idBarber = e.target.value
+            setListaServicios(listServ.map(servicio => servicio))
+          })
+      }
+      selects[selects.length - 1].className = 'd-none'
+    }
+    setDivider(!divider)
   }
-
 
   return (
     <div className='container'>
       <div className="row">
         <div className="col-sm-12 col-md-10">
           <div className='mb-3 mt-1'>
-            <BarraBusqueda datos={clientes} setDato={setCliente} txtInput={txtCliente} setTxtInput={setTxtCliente} placeholder={'Clientes'} focus={true} id={1}></BarraBusqueda>
+            <BarraBusqueda datos={clientes} setDato={setCliente} txtInput={txtCliente} setTxtInput={setTxtCliente} placeholder={'Clientes'} focus={true} cumple={cumple} setCumple={setCumple} id={1}></BarraBusqueda>
           </div>
         </div>
         <div className="col-sm-8 col-md-2 mb-3 pt-1">
-          {Object.keys(cliente).length > 0 && <span className='h4 text-info' id='spanPts'>{cliente.pts} pts.</span>}
+          {Object.keys(cliente).length > 0 && <span className={cumple ? 'h4 cumple text-info' : 'h4 text-info'} id='spanPts'>{cliente.pts} pts.</span>}
         </div>
       </div>
 
@@ -207,7 +272,7 @@ const Venta = ({ user }) => {
               <th className='text-start'>Servicio o Producto</th>
               <th>Precio c/u</th>
               <th>Subtotal</th>
-              <th><button className='btn btn-outline-danger'>Dividir</button></th>
+              <th className='text-end'><button onClick={() => mostrarSelects()} className='btn btn-outline-danger' id='btnDividir' >Dividir</button></th>
             </tr>
           </thead>
           <tbody id='tbody'></tbody>
@@ -215,10 +280,27 @@ const Venta = ({ user }) => {
             <tr>
               <td></td><td></td><td></td>
               <td className='text-end'><strong>Total:</strong></td>
-              <td><strong>${total}.00</strong></td>
+              <td className='h4'>${subtotal} {descuento > 0 && <span className='text-info'>-%{descuento} = <span className='text-primary h3'>${+descuento / 100 * -subtotal + +subtotal}</span> </span>}</td>
             </tr>
           </tfoot>
         </table>
+        <div className="text-end">
+          <button onClick={() => { setDescuento(0), setConDescuento(!conDescuento) }} id='btnDescuento' className={!conDescuento ? 'btn btn-sm text-white me-3 mb-3 btn-info' : 'btn btn-sm text-white me-3 mb-3 btn-secondary'} data-bs-toggle="collapse" data-bs-target="#collapseDescuento" aria-expanded="false"><strong>{!conDescuento ? 'Aplicar descuento' : 'Cancelar'}</strong></button>
+          <div className="collapse mb-2 me-3" id='collapseDescuento'>
+            <input onChange={() => setDescuento(10)} type="radio" className="btn-check" name="options-outlined" id="10%" autoComplete="off" />
+            <label className="btn btn-outline-info btn-sm" htmlFor="10%">10%</label>
+
+            <input onChange={() => setDescuento(20)} type="radio" className="btn-check" name="options-outlined" id="20%" autoComplete="off" />
+            <label className="btn btn-outline-info btn-sm" htmlFor="20%">20%</label>
+
+            <input onChange={() => setDescuento(30)} type="radio" className="btn-check" name="options-outlined" id="30%" autoComplete="off" />
+            <label className="btn btn-outline-info btn-sm" htmlFor="30%">30%</label>
+
+            <input onChange={() => setDescuento(50)} type="radio" className="btn-check" name="options-outlined" id="50%" autoComplete="off" />
+            <label className="btn btn-outline-info btn-sm" htmlFor="50%">50%</label>
+          </div>
+        </div>
+
       </div>
 
       <div className='row mb-4 border rounded py-3 px-3 bg-light shadow-sm d-flex'>
@@ -274,35 +356,44 @@ const Venta = ({ user }) => {
             <div className="input-group mb-1">
               <span className="input-group-text"><i className="fa-solid fa-money-bills me-1"></i>Efectivo</span>
               <input type="number" min={0} className="form-control" value={efectivo}
-                onChange={(e) => setEfectivo(e.target.value)}
+                onChange={(e) => setEfectivo(e.target.value ? e.target.value : 0)}
+                onClick={(e) => e.target.select()}
               />
             </div>
             <div className="input-group mb-1">
               <span className="input-group-text"><i className="fa-brands fa-cc-visa me-1"></i>Tarjeta</span>
               <input type="number" min={0} className="form-control" value={tarjeta}
-                onChange={(e) => setTarjeta(e.target.value)}
+                onChange={(e) => setTarjeta(e.target.value ? e.target.value : 0)}
+                onClick={(e) => e.target.select()}
               />
             </div>
             <div className="input-group mb-1">
               <span className="input-group-text"><i className="fa-solid fa-credit-card me-1"></i>Puntos</span>
               <input type="number" min={0} className="form-control" value={pts}
-                onChange={(e) => setPts(e.target.value)}
+                onChange={(e) => setPts(e.target.value ? e.target.value : 0)}
+                onClick={(e) => e.target.select()}
               />
             </div>
             <strong className='text-success'>{pts > 0 && '$' + pts / 2} </strong><br />
-            <strong className='h4'>{(pts > 0 || efectivo > 0 || tarjeta > 0) && 'Restante: $' + (total - pts / 2 - tarjeta - efectivo)} </strong>
+            <strong className='h4'>{(pts > 0 || efectivo > 0 || tarjeta > 0) && 'Restante: $' + (subtotal - descuento / 100 * subtotal - pts / 2 - tarjeta - efectivo)} </strong>
           </div>
         }
         <div className="col-md-6 text-end my-3">
-          <select value={idBarber} className='form-select' name="select-empleado" id="select-empleado"
-            onChange={(e) => { setIdBarber(e.target.value), setNombreBarber((e.target).options[(e.target).selectedIndex].text) }}
-          >
-
-            <option disabled>Empleado que atendió</option>
-            {empleados.map((empleado) => (
-              <option key={empleado.id} value={empleado.id} >{empleado.nombre}</option>
-            ))}
-          </select>
+          <div className="row">
+            <div className="col-11">
+              <select value={empleado.id} className='form-select' name="select-empleado" id="select-empleado"
+                onChange={(e) => { obtenerEmpleado(e.target.value) }}
+              >
+                <option disabled>Empleado que realizó el servicio</option>
+                {empleados.map((empleado) => (
+                  (empleado.id != '1' && empleado.estatus == 'A') && <option style={{ background: empleado.color, color: (empleado.color ? '#ffffff' : '#000000') }} key={empleado.id} value={empleado.id} >{empleado.nombre}</option>
+                ))}
+              </select>
+            </div>
+            <div className="col-1 rounded-pill text-center text-white pt-1" style={{ background: empleado.color, width: '38px', height: '38px' }}>
+              <span className='h5'>{empleado.nombre ? empleado.nombre.substring(0, 1) : ''}</span>
+            </div>
+          </div>
           {((listaProductos.length != 0 || listaServicios.length != 0) && Object.keys(cliente).length > 0) && <button onClick={nuevoCobro} className='btn btn-success w-75 my-3'>Registrar</button>}
         </div>
       </div>
