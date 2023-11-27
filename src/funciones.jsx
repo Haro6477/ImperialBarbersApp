@@ -236,7 +236,8 @@ export const addCobro = (nombreCliente, nombreBarber, ptsCliente, descuento, sub
           idProducto: producto.id,
           cantidad: producto.cantidad,
           precioActual: producto.precio,
-          puntosActual: producto.pts
+          puntosActual: producto.pts,
+          idBarber: idBarber
         })
       }
       Axios.put(`${server}/update-inventario`, {

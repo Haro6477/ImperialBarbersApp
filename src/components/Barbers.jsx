@@ -428,7 +428,7 @@ const Barbers = () => {
                     {(servicios.length == 0 && productos.length == 0) && <button onClick={() => getActividadCompleta(id, setServicios, setProductos)} className='btn btn-primary my-3'>Mostrar todo</button>}
                   </div>
                   {(servicios.length > 0 || productos.length > 0) &&
-                    <div className='bg-dark py-1 px-1 rounded'>
+                    <div className='bg-dark py-1 px-1 rounded mt-5'>
                       <table className='table text-center table-dark'>
                         <thead>
                           <tr>
