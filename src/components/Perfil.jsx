@@ -34,7 +34,6 @@ export const Perfil = ({ user = {} }) => {
     setUsuario(empleado.usuario ? empleado.usuario : '')
     setPass(empleado.pass)
     setColor(empleado.color ? empleado.color : '#000000')
-    console.log(empleado)
   }, [empleado])
 
   const formatearFecha = (fecha) => {
