@@ -131,7 +131,6 @@ export const Navbar = ({ logout, funciones, estados, user }) => {
     } else {
       addCliente(nombreCliente, telefonoCliente, pts, genero, fechaNacimientoCliente, codigoQR)
       document.getElementById('btnCerrar').click()
-      window.location.reload()
     }
   }
 
