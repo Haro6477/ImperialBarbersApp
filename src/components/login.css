@@ -9,3 +9,9 @@
     background: linear-gradient(to right, rgb(144, 17, 203), rgb(37, 137, 252))
 }
 
+.div-custom {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw; /* Establece el ancho al 100% del viewport width */
+}

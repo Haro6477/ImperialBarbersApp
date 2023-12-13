@@ -63,25 +63,27 @@ export function formatearFecha(fecha) {
   return fechaFormateada.toLocaleDateString('es-MX', opciones)
 }
 
-export const addCliente = (nombre, telefono, pts, genero, fechaNacimiento, codigoQR, getClientes) => {
+export const addCliente = (nombre, telefono, pts, genero, fechaNacimiento, codigoQR, municipio, getClientes) => {
   Axios.post(`${server}/create-cliente`, {
     nombre: capitalize(nombre),
     telefono: telefono,
     pts: pts,
     genero: genero,
     fechaNacimiento: validarFecha(fechaNacimiento),
+    municipio: municipio
   }).then(() => {
     getClientes && getClientes()
   }).finally(() => showAlert("Cliente registrado con éxito", 'success'))
 }
 
-export const updateCliente = (nombre, telefono, pts, genero, fechaNacimiento, codigoQR, id, getClientes) => {
+export const updateCliente = (nombre, telefono, pts, genero, fechaNacimiento, codigoQR, municipio, id, getClientes) => {
   Axios.put(`${server}/update-cliente`, {
     nombre: capitalize(nombre),
     telefono: telefono,
     pts: pts,
     genero: genero,
     fechaNacimiento: validarFecha(fechaNacimiento),
+    municipio: municipio,
     id: id,
   }).then(() => {
     getClientes()
@@ -105,7 +107,7 @@ export const getEmpleados = (setEmpleados, setHorarios) => {
   })
 }
 
-export const addEmpleado = (nombre, telefono, correo, usuario, pass, puesto, estatus, foto, fechaInicio, fechaNacimiento, getEmpleados) => {
+export const addEmpleado = (nombre, telefono, correo, usuario, pass, puesto, estatus, foto, fechaInicio, fechaNacimiento, muni, getEmpleados) => {
   Axios.post(`${server}/create-empleado`, {
     nombre: capitalize(nombre),
     telefono: telefono,
@@ -116,7 +118,8 @@ export const addEmpleado = (nombre, telefono, correo, usuario, pass, puesto, est
     pass: pass,
     puesto: puesto,
     estatus: estatus,
-    foto: foto
+    foto: foto,
+    municipio: muni
   }).then((res) => {
     Axios.post(`${server}/create-horario`, {
       idBarber: res.data.insertId
@@ -126,7 +129,7 @@ export const addEmpleado = (nombre, telefono, correo, usuario, pass, puesto, est
   });
 }
 
-export const updateEmpleado = (checkCatalogo, checkHorarios, checkBarbers, checkCaja, checkClientes, nombre, telefono, correo, usuario, pass, puesto, estatus, foto, fechaInicio, fechaNacimiento, id, getEmpleados) => {
+export const updateEmpleado = (checkCatalogo, checkHorarios, checkBarbers, checkCaja, checkClientes, nombre, telefono, correo, usuario, pass, puesto, estatus, foto, fechaInicio, fechaNacimiento, muni, id, getEmpleados) => {
   Axios.put(`${server}/update-empleado`, {
     nombre: capitalize(nombre),
     telefono: telefono,
@@ -137,6 +140,7 @@ export const updateEmpleado = (checkCatalogo, checkHorarios, checkBarbers, check
     pass: pass,
     puesto: puesto,
     estatus: estatus,
+    municipio: muni,
     id: id,
   }).then(() => {
     axios.delete(`${server}/delete-permisos/${id}`).then(() => {
@@ -324,7 +328,7 @@ export const getServicio = (id) => {
   const instruccion = server + '/servicio/' + id
   axios.get(instruccion)
 }
-export const addProducto = (nombre, marca, linea, contenido, enVenta, suministros, almacen, descripcion, costo, precio, pts, getProductos) => {
+export const addProducto = (nombre, marca, linea, contenido, enVenta, suministros, almacen, descripcion, costo, precio, pts, municipio, getProductos) => {
   Axios.post(`${server}/create-producto`, {
     nombre: capitalize(nombre),
     marca: marca,
@@ -336,7 +340,8 @@ export const addProducto = (nombre, marca, linea, contenido, enVenta, suministro
     descripcion: descripcion,
     costo: costo,
     precio: precio,
-    pts: pts
+    pts: pts,
+    municipio: municipio
   }).then(() => {
     getProductos()
     showAlert("Producto registrado con éxito", 'success')
@@ -363,12 +368,13 @@ export const updateProducto = (nombre, marca, linea, contenido, enVenta, suminis
   });
 }
 
-export const addServicio = (nombre, descripcion, precio, pts, getServicios) => {
+export const addServicio = (nombre, descripcion, precio, pts, municipio, getServicios) => {
   Axios.post(`${server}/create-servicio`, {
     nombre: capitalize(nombre),
     descripcion: descripcion,
     precio: precio,
     pts: pts,
+    municipio: municipio
   }).then(() => {
     getServicios()
     showAlert("Servicio registrado con éxito", 'success')

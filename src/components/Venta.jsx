@@ -7,6 +7,7 @@ import { BarraBusqueda } from './BarraBusqueda'
 const Venta = ({ user }) => {
   // const server = 'http://localhost'
   const server = import.meta.env.VITE_SERVER
+  const municipio = import.meta.env.VITE_MUNICIPIO
 
   const [productos, setProductos] = useState([])
   const [servicios, setServicios] = useState([])
@@ -56,7 +57,7 @@ const Venta = ({ user }) => {
   }, [])
 
   const getEmpleados = () => {
-    axios.get(`${server}/empleados`).then((response) => {
+    axios.get(`${server}/empleados/${municipio}`).then((response) => {
       setEmpleados(response.data);
       setEmpleado(response.data[0])
     })
@@ -71,14 +72,14 @@ const Venta = ({ user }) => {
 
   const getProductos = () => {
     setLoading(true)
-    axios.get(`${server}/productos`).then((response) => {
+    axios.get(`${server}/productos/${municipio}`).then((response) => {
       setProductos(response.data);
     }).finally(setLoading(false))
   }
 
   const getServicios = () => {
     setLoading(true)
-    axios.get(`${server}/servicios`).then((response) => {
+    axios.get(`${server}/servicios/${municipio}`).then((response) => {
       setServicios(response.data);
     }).finally(setLoading(false))
   }
@@ -303,14 +304,14 @@ const Venta = ({ user }) => {
 
       </div>
 
-      <div className='row mb-4 border rounded py-3 px-3 bg-light shadow-sm d-flex'>
+      <div className='row mb-4 border rounded py-3 px-3 shadow-sm d-flex' style={{background:'#dae0e8'}}>
         <div className="col">
           <h5 className='mb-3'>Método de pago</h5>
           <div className="row ">
             <div className="col align-self-center">
-              <div className=" text-start ">
-                <div className="form-check">
-                  <input onChange={(e) => setMetodoPago('e')} className="form-check-input" type="radio" name="flexRadioDefault" id='flexRadioDefault1' value={'e'} defaultChecked />
+              <div className=" text-start">
+                <div className="form-check ">
+                  <input onChange={(e) => setMetodoPago('e')} className="form-check-input shadow-sm" type="radio" name="flexRadioDefault" id='flexRadioDefault1' value={'e'} defaultChecked />
                   <label className="form-check-label" htmlFor="flexRadioDefault1">
                     Efectivo
                   </label>
@@ -320,7 +321,7 @@ const Venta = ({ user }) => {
             <div className="col align-self-center">
               <div className=" text-start ">
                 <div className="form-check">
-                  <input onChange={(e) => setMetodoPago('t')} className="form-check-input" type="radio" name="flexRadioDefault" id='flexRadioDefault2' value={'t'} />
+                  <input onChange={(e) => setMetodoPago('t')} className="form-check-input shadow-sm" type="radio" name="flexRadioDefault" id='flexRadioDefault2' value={'t'} />
                   <label className="form-check-label" htmlFor="flexRadioDefault2">
                     Tarjeta
                   </label>
@@ -331,7 +332,7 @@ const Venta = ({ user }) => {
             <div className="col align-self-center">
               <div className=" text-start ">
                 <div className="form-check">
-                  <input onChange={(e) => setMetodoPago('p')} className="form-check-input" type="radio" name="flexRadioDefault" id='flexRadioDefault3' value={'p'} />
+                  <input onChange={(e) => setMetodoPago('p')} className="form-check-input shadow-sm" type="radio" name="flexRadioDefault" id='flexRadioDefault3' value={'p'} />
                   <label className="form-check-label" htmlFor="flexRadioDefault3">
                     Puntos
                   </label>
@@ -342,7 +343,7 @@ const Venta = ({ user }) => {
             <div className={metodoPago != 'm' ? 'col align-self-center' : 'col align-self-center d-none'}>
               <div className=" text-start ">
                 <div className="form-check">
-                  <input onChange={(e) => setMetodoPago('m')} className="form-check-input" type="radio" name="flexRadioDefault" id='flexRadioDefault4' value={'m'} />
+                  <input onChange={(e) => setMetodoPago('m')} className="form-check-input shadow-sm" type="radio" name="flexRadioDefault" id='flexRadioDefault4' value={'m'} />
                   <label className="form-check-label" htmlFor="flexRadioDefault4">
                     Mixto
                   </label>

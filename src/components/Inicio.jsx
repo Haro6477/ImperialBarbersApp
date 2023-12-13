@@ -30,7 +30,7 @@ export const Inicio = ({ logout, user }) => {
     }
 
     return (
-        <>
+        <div style={{minHeight: '100vh'}}>
             <Navbar logout={cerrarSesion} funciones={funciones} estados={estados} user={user}/>
             {btnVenta && <Venta user={user}/> }
             {btnClientes && <Clientes />}
@@ -40,6 +40,6 @@ export const Inicio = ({ logout, user }) => {
             {btnAgenda && <Agenda/>}
             {btnCaja && <Caja user={user}/>}
             {btnPerfil && <Perfil user={user}/>}
-        </>
+        </div>
     )
 }

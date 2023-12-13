@@ -8,6 +8,7 @@ import Swal from 'sweetalert2'
 const Catalogo = () => {
   // const server = 'http://localhost'
   const server = import.meta.env.VITE_SERVER
+  const municipio = import.meta.env.VITE_MUNICIPIO
 
   const [productos, setProductos] = useState([])
   const [servicios, setServicios] = useState([])
@@ -45,14 +46,14 @@ const Catalogo = () => {
 
   const getProductos = () => {
     setLoadingPro(true)
-    axios.get(`${server}/productos`).then((response) => {
+    axios.get(`${server}/productos/${municipio}`).then((response) => {
       setProductos(response.data);
       setProductosMostrados(response.data)
     }).finally(setLoadingPro(false))
   }
 
   const getServicios = () => {
-    axios.get(`${server}/servicios`).then((response) => {
+    axios.get(`${server}/servicios/${municipio}`).then((response) => {
       setServicios(response.data);
       setServiciosMostrados(response.data)
     }).finally(setLoadingServ(false))
@@ -144,7 +145,7 @@ const Catalogo = () => {
       showAlert('Escribe el nombre', 'warning')
     } else {
       if (operacion === 1) {
-        addProducto(nombre, marca, linea, contenido, enVenta, suministros, almacen, descripcion, costo, precio, pts, getProductos)
+        addProducto(nombre, marca, linea, contenido, enVenta, suministros, almacen, descripcion, costo, precio, pts, municipio, getProductos)
       } else {
         updateProducto(nombre, marca, linea, contenido, enVenta, suministros, almacen, descripcion, costo, precio, pts, id, getProductos)
       }
@@ -157,7 +158,7 @@ const Catalogo = () => {
       showAlert('Escribe el nombre', 'warning')
     } else {
       if (operacion === 1) {
-        addServicio(nombre, descripcion, precio, pts, getServicios)
+        addServicio(nombre, descripcion, precio, pts, municipio, getServicios)
       } else {
         updateServicio(nombre, descripcion, precio, pts, id, getServicios)
       }

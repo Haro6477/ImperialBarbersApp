@@ -53,13 +53,16 @@ export const BarberCard = ({ children, empleado, image, setFotoActualizada }) =>
             <input onChange={(input) => { uploadImagen(input.target) }} id={"file-input" + empleado.id} type="file" />
           </form>
         </div>
+        {children}
 
         <div className="card-body">
           <h5 className="card-title ">{empleado.nombre}</h5>
+          
           <strong className='text-info'>Teléfono </strong><p className=" card-text">{empleado.telefono}</p>
           <strong className='text-info'>Correo </strong><p className=" card-text">{empleado.correo}</p>
           <strong className='text-info'>Fecha de nacimiento </strong><p className=" card-text">{empleado.fechaNacimiento ? new Date(empleado.fechaNacimiento).toLocaleDateString('es-mx', opciones) : ""}</p>
           <strong className='text-info'>Fecha de inicio </strong><p className=" card-text">{empleado.fechaInicio ? new Date(empleado.fechaInicio).toLocaleDateString('es-mx', opciones) : ""}</p>
+          <strong className='text-info'>Municipio </strong><p className=" card-text">{empleado.municipio == 1 ? "Teziutlán" : "Tlatlauquitepec"}</p>
           <strong className='text-info'>Puesto </strong><p className=" card-text">{empleado.puesto}</p>
           <strong className='text-info'>Estado </strong><p className=" card-text">
             {empleado.estatus == 'A' && <span className='badge bg-success'>Activo</span>}
@@ -68,7 +71,6 @@ export const BarberCard = ({ children, empleado, image, setFotoActualizada }) =>
             {empleado.estatus == 'B' && <span className='badge bg-dark'>Baja</span>}
             {empleado.estatus == 'P' && <span className='badge bg-secondary'>Pausa</span>}
           </p>
-          {children}
         </div>
       </div>
     </div>

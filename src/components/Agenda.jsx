@@ -4,10 +4,6 @@ const Agenda = () => {
   const [loading, setLoading] = useState(true)
 
   return (
-
-
-
-    
     <div className='container'>
       <a className='btn btn-warning text-white my-2' target='_blank' href="https://calendar.google.com/calendar/u/0?cid=YWxpdmUzMDEwMjBAZ21haWwuY29t"><strong>Abrir calendario</strong> </a>
       <div className="mb-5 px-3 py-3 bg-light rounded shadow-sm">

@@ -6,6 +6,7 @@ import Axios from 'axios'
 const Caja = ({ user }) => {
   // const server = 'http://localhost'
   const server = import.meta.env.VITE_SERVER
+  const municipio = import.meta.env.VITE_MUNICIPIO
 
   const [efectivo, setEfectivo] = useState(0)
   const [dineroElectronico, setDineroElectronico] = useState(0)
@@ -48,7 +49,7 @@ const Caja = ({ user }) => {
   }, [])
 
   const getCaja = () => {
-    axios.get(`${server}/caja`).then((response) => {
+    axios.get(`${server}/caja/${municipio}`).then((response) => {
       setEfectivo(response.data[0].efectivo);
       setDineroElectronico(response.data[0].dineroElectronico);
       setPts(response.data[0].puntos)
@@ -56,14 +57,14 @@ const Caja = ({ user }) => {
   }
 
   const getCrobrosHoy = () => {
-    axios.get(`${server}/cobros-hoy`).then((response) => {
+    axios.get(`${server}/cobros-hoy/${municipio}`).then((response) => {
       setCobrosHoy(response.data);
     }).finally(() => setLoadingCobros(false))
   }
 
   const getMovimientosHoy = () => {
     setLoadingMovimientos(true)
-    axios.get(`${server}/movimientos-hoy`).then((response) => {
+    axios.get(`${server}/movimientos-hoy/${municipio}`).then((response) => {
       setMovimientos(response.data)
     }).finally(() => setLoadingMovimientos(false))
   }
@@ -106,7 +107,7 @@ const Caja = ({ user }) => {
     setHistorial(true)
     setLoadingHistorial(true)
     tableDiv.className = 'rounded py-1 px-1 shadow-sm bg-light border mb-5 d-block'
-    Axios.get(`${server}/cobros`).then((response) => {
+    Axios.get(`${server}/cobros/${municipio}`).then((response) => {
       cobros = response.data
     }).then(() => {
       let fechaIndex = new Date(2022, 1, 1)
@@ -183,17 +184,17 @@ const Caja = ({ user }) => {
         <div className="col text-start"></div>
         <div className="col col-12 col-xl-6 shadow-sm rounded border pb-2 pt-3 px-3 mb-4 mx-auto">
           <div className="row">
-            <h1 className='mb-3'>Caja: <span className='badge bg-dark'>${efectivo + dineroElectronico}.00</span> </h1>
+            <h1 className='mb-3'>Caja: <span className='badge bg-dark'>${+efectivo + +dineroElectronico}</span> </h1>
             <div className="col">
               <strong>Efectivo</strong>
               <br /><h4>
-                <span className='badge bg-success'>${efectivo}.00</span>
+                <span className='badge bg-success'>${efectivo}</span>
               </h4>
             </div>
             <div className="col">
               <strong>Dinero electrónico</strong>
               <br /><h4>
-                <span className='badge bg-primary'>${dineroElectronico}.00</span>
+                <span className='badge bg-primary'>${dineroElectronico}</span>
               </h4>
             </div>
             <div className="col">
@@ -234,7 +235,7 @@ const Caja = ({ user }) => {
                       : cobro.metodoPago == 't' ? <td><span className='badge bg-info'>Tarjeta</span></td>
                         : cobro.metodoPago == 'p' ? <td><span className='badge bg-danger'>Puntos</span></td>
                           : <td><span className='badge bg-warning'>Mixto</span></td>}
-                    {cobro.cliente == "Cliente De Pruebas" ? <td className='text-secondary'>${cobro.total}.00</td> : <td>${cobro.total}.00</td>}
+                    {cobro.cliente == "Cliente De Pruebas" ? <td className='text-secondary'>${cobro.total}</td> : <td>${cobro.total}</td>}
                   </tr>
                 ))}
               </tbody>
@@ -260,8 +261,8 @@ const Caja = ({ user }) => {
                   <tr key={movimiento.id}>
                     <td className='text-start'>{movimiento.nombre}</td>
                     <td className='text-start'>{movimiento.concepto}</td>
-                    {movimiento.cantidad < 0 ? <td className='text-danger h6'>${movimiento.cantidad}.00</td>
-                      : <td className='text-success h6'>${movimiento.cantidad}.00</td>}
+                    {movimiento.cantidad < 0 ? <td className='text-danger h6'>${movimiento.cantidad}</td>
+                      : <td className='text-success h6'>${movimiento.cantidad}</td>}
                   </tr>
                 ))}
               </tbody>
@@ -281,7 +282,8 @@ const Caja = ({ user }) => {
       </div>
 
       {!historial
-        ? <div className='my-3 mb-5'>
+        ?
+        <div className='my-3 mb-5'>
           <button className='btn btn-outline-dark rounded-pill' style={{ width: '40px', height: '40px' }}
             onClick={() => { getCobrosHistorial() }}
           >
@@ -314,7 +316,7 @@ const Caja = ({ user }) => {
             <div className="modal-body text-start">
               <div className="row">
                 <div className="col-4">
-                  <span className='h6'><span className='text-warning'>No.{idCobro }</span>{' / ' + formatearFecha(fecha)}</span>
+                  <span className='h6'><span className='text-warning'>No.{idCobro}</span>{' / ' + formatearFecha(fecha)}</span>
                   <h5 className='mt-2 text-info'>Subtotal: <span className='text-dark'>${subtotal}</span></h5>
                   <h5 className='mt-2 text-info'>Descuento: <span className='text-dark'>${descuento ? descuento : 0}</span></h5>
                   <h3 className='mt-2 text-info'>Total: <span className='text-success'>${totalCobro}</span></h3>
@@ -351,7 +353,7 @@ const Caja = ({ user }) => {
                             <tr key={detalle.id}>
                               <td className='text-start'>{detalle.nombre}</td>
                               <td>{detalle.cantidad}</td>
-                              <td>$ {detalle.precioActual * detalle.cantidad}.00</td>
+                              <td>$ {detalle.precioActual * detalle.cantidad}</td>
                               <td>{detalle.puntosActual * detalle.cantidad} pts.</td>
                               {<td>{detalle.barber}</td>}
                             </tr>
@@ -360,7 +362,7 @@ const Caja = ({ user }) => {
                             <tr key={detalle.id}>
                               <td className='text-start'>{detalle.nombre}</td>
                               <td>{detalle.cantidad}</td>
-                              <td>$ {detalle.precioActual * detalle.cantidad}.00</td>
+                              <td>$ {detalle.precioActual * detalle.cantidad}</td>
                               <td>{detalle.puntosActual * detalle.cantidad} pts.</td>
                               <td>{detalle.barber ? detalle.barber : barber}</td>
                             </tr>

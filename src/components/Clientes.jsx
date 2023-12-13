@@ -7,6 +7,7 @@ import { BarraBusqueda2 } from './BarraBusqueda2'
 export const Clientes = () => {
   // const server = 'http://localhost'
   const server = import.meta.env.VITE_SERVER
+  const municipio = import.meta.env.VITE_MUNICIPIO
 
   const [clientes, setClientes] = useState([])
   const [clientesMostrados, setClientesMostrados] = useState([])
@@ -85,9 +86,9 @@ export const Clientes = () => {
       showAlert('Escribe el nombre del cliente', 'warning')
     } else {
       if (operacion === 1) {
-        addCliente(nombre, telefono, pts, genero, fechaNacimiento, codigoQR, getClientes)
+        addCliente(nombre, telefono, pts, genero, fechaNacimiento, codigoQR, municipio, getClientes)
       } else {
-        updateCliente(nombre, telefono, pts, genero, fechaNacimiento, codigoQR, id, getClientes)
+        updateCliente(nombre, telefono, pts, genero, fechaNacimiento, codigoQR, municipio, id, getClientes)
       }
       document.getElementById('btnCerrarModal').click()
     }
@@ -144,7 +145,8 @@ export const Clientes = () => {
                     <th>Teléfono</th>
                     <th>Pts</th>
                     <th>Cumpleaños</th>
-                    <th>Acciones</th>
+                    <th>Municipio</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody className='table-group-divider'>
@@ -155,9 +157,10 @@ export const Clientes = () => {
                       <td>{cliente.telefono}</td>
                       <td>{cliente.pts}</td>
                       {(new Date(new Date().getFullYear(), new Date(cliente.fechaNacimiento).getMonth(), new Date(cliente.fechaNacimiento).getDate()) > new Date(Date.now() - 432000000) && new Date(new Date().getFullYear(), new Date(cliente.fechaNacimiento).getMonth(), new Date(cliente.fechaNacimiento).getDate()) < new Date(Date.now() + 432000000))
-                      ? <td style={{ background: 'linear-gradient(indigo, blue)', color: 'white', border: '3px solid #ee00ff' }}>{new Date(cliente.fechaNacimiento).toLocaleDateString('es-MX', { day: 'numeric', month: 'long' })}</td>
+                      ? <td style={{ background: 'linear-gradient(indigo, blue)', color: 'white', borderRadius:'.75em' }}>{new Date(cliente.fechaNacimiento).toLocaleDateString('es-MX', { day: 'numeric', month: 'long' })}</td>
                       : <td>{new Date(cliente.fechaNacimiento).toLocaleDateString('es-MX', { day: 'numeric', month: 'long' })}</td>}
                       {/* <td>${new Intl.NumberFormat('es-mx').format(producto.precio)}</td> */}
+                      <td>{cliente.municipio == 1 ? "Teziutlán" : "Tlatlauqui"}</td>
                       <td>
                         <button className='btn btn-sm btn-warning' data-bs-toggle='modal' data-bs-target='#modalClientes'
                           onClick={() => openModal(2, cliente.id, cliente.nombre, cliente.telefono, cliente.fechaNacimiento, cliente.genero, cliente.pts)}
@@ -207,6 +210,23 @@ export const Clientes = () => {
                   onChange={(e) => setFechaNacimiento(e.target.value)}
                 />
               </div>
+              {/* <div className="input-group mb-3 border rounded">
+                <span className="input-group-text me-4"><i className="fa-solid fa-map-location-dot"></i><span className='ms-2'>Municipio</span></span>
+                <div className="checkbox-tick my-auto"
+                  onChange={(e) => {
+                    setMunicipio(e.target.value)
+                  }}
+                >
+                  <label className="male me-3">
+                    <input id='checkT1' type="radio" name="muni" value="1" /> Teziutlán
+                    <span className="checkmark"></span>
+                  </label>
+                  <label className="female">
+                    <input id='checkT2' type="radio" name="muni" value="2" /> Tlatlauqui
+                    <span className="checkmark"></span>
+                  </label>
+                </div>
+              </div> */}
               <div className="input-group mb-3 border rounded">
                 <span className="input-group-text me-4"><i className="fa-solid fa-venus-mars"></i><span className='ms-2'>Género</span></span>
                 <div className="checkbox-tick my-auto"

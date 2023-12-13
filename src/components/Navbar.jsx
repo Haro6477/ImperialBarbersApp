@@ -11,6 +11,7 @@ import axios from "axios"
 
 export const Navbar = ({ logout, funciones, estados, user }) => {
   const server = import.meta.env.VITE_SERVER
+  const municipio = import.meta.env.VITE_MUNICIPIO
 
   const [nombreCliente, setNombreCliente] = useState("")
   const [telefonoCliente, setTelefonoCliente] = useState("")
@@ -91,15 +92,19 @@ export const Navbar = ({ logout, funciones, estados, user }) => {
 
   const getDescanso = () => {
     axios.get(`${server}/descanso/${user.id}`).then((res) => {
-      if (res.data[0].comidaInicio) {
-        if (res.data[0].comidaFin) {
-          setDescanso(true)
-          setDescansoFin(true)
-        } else {
-          setDescanso(true)
-          horaDescanso = (res.data[0].comidaInicio)
-          actualizarTiempo()
+      try {
+        if (res.data[0].comidaInicio) {
+          if (res.data[0].comidaFin) {
+            setDescanso(true)
+            setDescansoFin(true)
+          } else {
+            setDescanso(true)
+            horaDescanso = (res.data[0].comidaInicio)
+            actualizarTiempo()
+          }
         }
+      } catch (error) {
+        console.log('ERROR: ' + error)
       }
     })
   }
@@ -129,7 +134,7 @@ export const Navbar = ({ logout, funciones, estados, user }) => {
     if (nombreCliente.trim() == '') {
       showAlert('Escribe el nombre del cliente', 'warning')
     } else {
-      addCliente(nombreCliente, telefonoCliente, pts, genero, fechaNacimientoCliente, codigoQR)
+      addCliente(nombreCliente, telefonoCliente, pts, genero, fechaNacimientoCliente, codigoQR, municipio)
       document.getElementById('btnCerrar').click()
     }
   }
@@ -159,7 +164,7 @@ export const Navbar = ({ logout, funciones, estados, user }) => {
                   ? <ButtonPill icon="fa-solid fa-credit-card">Realizar Venta </ButtonPill>
                   : <ButtonOutline icon="fa-solid fa-credit-card">Realizar Venta</ButtonOutline>}
               </li>
-              <li onClick={() => { if (permisos.includes('clientes')) setBtn(funciones.setBtnClientes) }} className="nav-item">
+              <li className="nav-item">
                 {permisos.includes('clientes')
                   ? estados.btnClientes
                     ? <ButtonPlusActive setBtn={setBtn} setBtnClientes={funciones.setBtnClientes} openModal={openModal} icon="fa-solid fa-address-book">Clientes</ButtonPlusActive>

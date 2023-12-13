@@ -38,7 +38,8 @@
 }
 
 .pointer {
-    cursor: pointer;
+    cursor: url('../images/pen-solid.svg'), auto;
+    
 }
 
 

@@ -28,10 +28,10 @@ export const LoginTKB = ({ login }) => {
     }
 
     return (
-        <div className="row py-5 gradient-custom">
+        <div className="row py-3 gradient-custom div-custom" style={{minHeight: '100vh', minWidth: '100vw'}}>
             <div className="col-11 col-md-8 col-lg-6 col-xl-5 mx-auto">
                 <div className="card bg-dark text-white ">
-                    <div className="card-body p-4 text-center">
+                    <div className="card-body p-4 text-center ">
                         <div className="px-5">
                             <img src='../src/images/logo-dark.png' alt="" className='w-75' />
                             <p className="text-white-50 mb-3">Ingresa tu nombre de usuario y contraseña</p>

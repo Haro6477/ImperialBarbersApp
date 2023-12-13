@@ -7,6 +7,7 @@ import Swal from 'sweetalert2'
 const Barbers = () => {
   // const server = 'http://localhost'
   const server = import.meta.env.VITE_SERVER
+  const municipio = import.meta.env.VITE_MUNICIPIO
 
   const [empleados, setEmpleados] = useState([])
   const [serviciosSemana, setServiciosSemana] = useState([])
@@ -23,6 +24,7 @@ const Barbers = () => {
   const [pass, setPass] = useState("")
   const [puesto, setPuesto] = useState("")
   const [estatus, setEstatus] = useState('')
+  const [muni, setMunicipio] = useState(municipio)
   const [foto, setFoto] = useState("")
   const [checkCatalogo, setCheckCatalogo] = useState(false)
   const [checkHorarios, setCheckHorarios] = useState(false)
@@ -80,7 +82,7 @@ const Barbers = () => {
     })
   }
 
-  const openModal = (op, id, nombre, telefono, correo, fechaInicio, fechaNacimiento, usuario, pass, puesto, estatus, permisos, foto) => {
+  const openModal = (op, id, nombre, telefono, correo, fechaInicio, fechaNacimiento, usuario, pass, puesto, estatus, permisos, foto, municipio) => {
     setId(null)
     setNombre("")
     setTelefono("")
@@ -91,13 +93,14 @@ const Barbers = () => {
     setPass("")
     setPuesto("")
     setEstatus("")
+    setMunicipio("")
     setFoto(null)
     setOperacion(op)
-    setCheckCatalogo(permisos.includes('catalogo'))
-    setCheckHorarios(permisos.includes('horarios'))
-    setCheckBarbers(permisos.includes('barbers'))
-    setCheckCaja(permisos.includes('caja'))
-    setCheckClientes(permisos.includes('clientes'))
+    permisos? setCheckCatalogo(permisos.includes('catalogo')) : setCheckCatalogo(false)
+    permisos? setCheckHorarios(permisos.includes('horarios')) : setCheckHorarios(false)
+    permisos? setCheckBarbers(permisos.includes('barbers')) : setCheckBarbers(false)
+    permisos? setCheckCaja(permisos.includes('caja')) : setCheckCaja(false)
+    permisos? setCheckClientes(permisos.includes('clientes')) : setCheckClientes(false)
 
     if (op === 1) {
       document.getElementById('btnAceptar').className = "btn btn-success"
@@ -117,6 +120,7 @@ const Barbers = () => {
       if (puesto) setPuesto(puesto)
       if (estatus) setEstatus(estatus)
       if (foto) setFoto(foto)
+      if (municipio) setMunicipio(municipio)
       if (fechaNacimiento != null) {
         const date = new Date(fechaNacimiento);
         const yyyy = date.getFullYear();
@@ -152,9 +156,9 @@ const Barbers = () => {
       showAlert('Escribe el nombre del empleado', 'warning')
     } else {
       if (operacion === 1) {
-        addEmpleado(nombre, telefono, correo, usuario, pass, puesto, estatus, foto, fechaInicio, fechaNacimiento, getEmpleados)
+        addEmpleado(nombre, telefono, correo, usuario, pass, puesto, estatus, foto, fechaInicio, fechaNacimiento, muni, getEmpleados)
       } else {
-        updateEmpleado(checkCatalogo, checkHorarios, checkBarbers, checkCaja, checkClientes, nombre, telefono, correo, usuario, pass, puesto, estatus, foto, fechaInicio, fechaNacimiento, id, getEmpleados)
+        updateEmpleado(checkCatalogo, checkHorarios, checkBarbers, checkCaja, checkClientes, nombre, telefono, correo, usuario, pass, puesto, estatus, foto, fechaInicio, fechaNacimiento, muni, id, getEmpleados)
       }
       document.getElementById('btnCerrarModal').click()
     }
@@ -225,7 +229,7 @@ const Barbers = () => {
                 <BarberCard key={empleado.id} empleado={empleado} image={listFotos.find((image) => image == `empleado${empleado.id}.jpeg`)} setFotoActualizada={setFotoActualizada}>
                   <div>
                     <button className='btn btn-warning' data-bs-toggle='modal' data-bs-target='#modalEmpleados'
-                      onClick={() => openModal(2, empleado.id, empleado.nombre, empleado.telefono, empleado.correo, empleado.fechaInicio, empleado.fechaNacimiento, empleado.usuario, empleado.pass, empleado.puesto, empleado.estatus, empleado.permisos, empleado.foto)}
+                      onClick={() => openModal(2, empleado.id, empleado.nombre, empleado.telefono, empleado.correo, empleado.fechaInicio, empleado.fechaNacimiento, empleado.usuario, empleado.pass, empleado.puesto, empleado.estatus, empleado.permisos, empleado.foto, empleado.municipio)}
                     >
                       <i className="fa-solid fa-edit"></i>
                     </button>
@@ -234,7 +238,7 @@ const Barbers = () => {
                       <i className="fa-solid fa-trash"></i>
                     </button>
                     &nbsp;
-                    <button className='btn text-white' style={{ background: 'indigo' }} data-bs-toggle='modal' data-bs-target='#modal-cobros'
+                    <button className='btn text-white' style={{ background: empleado.color }} data-bs-toggle='modal' data-bs-target='#modal-cobros'
                       onClick={() => { getActividadSemana(empleado.id, setServiciosSemana, setProductosSemana, setServicios, setProductos, calcularTotal); setId(empleado.id) }}
                     >
                       <span className='h6'>Actividades semana</span>
@@ -338,6 +342,14 @@ const Barbers = () => {
                       <option value='V'>Vacaciones</option>
                       <option value='B'>Baja</option>
                       <option value='P'>Pausa</option>
+                    </select>
+                  </div>
+                  <div className="input-group mb-3">
+                    <span className="input-group-text"><i className="fa-solid fa-arrow-down-up-across-line"></i></span>
+                    <select value={muni} onChange={(e) => setMunicipio(e.target.value)} className='form-select' name="select-municipio" id="select-municipio">
+                      <option disabled>Municipio</option>
+                      <option value='1'>Teziutlán</option>
+                      <option value='2'>Tlatlauqui</option>
                     </select>
                   </div>
                 </div>
