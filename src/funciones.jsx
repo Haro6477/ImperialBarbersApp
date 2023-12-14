@@ -445,6 +445,7 @@ export const getDetallesServ = (idCobro, setDetalles) => {
   const instruccion = server + '/detalles-servicio/' + idCobro
   axios.get(instruccion).then((response) => {
     setDetalles(response.data)
+    console.log(server + '/detalles-servicio/' + idCobro)
   })
 }
 

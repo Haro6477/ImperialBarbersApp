@@ -11,7 +11,7 @@ export const BarraBusqueda = ({ datos = [], datos2, setDato, setDato2, txtInput 
             setTxtInput(valor)
             if (input.value == "") {
                 selectDrop.className = classInputNone
-                setCumple(false)
+                setCumple && setCumple(false)
                 setDato({})
             }
             else selectDrop.className = classInputBlock
@@ -24,12 +24,23 @@ export const BarraBusqueda = ({ datos = [], datos2, setDato, setDato2, txtInput 
         if (selectDrop.length == 0) selectDrop.classList = 'd-none'
     }
 
+    // Obtener el elemento de audio
+    var audio = document.getElementById("myAudio");
+
+    // Reproducir el audio
+    function playAudio() {
+        audio.play();
+    }
+
     const pushText = (id) => {
         const dato = (datos.find((dato) => dato.id == id));
         input.value = dato.nombre
         setDato(dato)
         const fechaCumple = new Date(new Date().getFullYear(), new Date(dato.fechaNacimiento).getMonth(), new Date(dato.fechaNacimiento).getDate())
-        setCumple(fechaCumple > new Date(Date.now() - 432000000) && fechaCumple < new Date(Date.now() + 432000000))
+        if (fechaCumple > new Date(Date.now() - 432000000) && fechaCumple < new Date(Date.now() + 432000000)) {
+            setCumple(true)
+            // playAudio()
+        }
         selectDrop.className = classInputNone
         document.getElementById('input2').focus()
     }
@@ -110,6 +121,10 @@ export const BarraBusqueda = ({ datos = [], datos2, setDato, setDato2, txtInput 
                     </select>
                 </div>
             </div>
+            {/* <audio id="myAudio">
+                <source src="ruta-del-archivo-de-audio.mp3" type="audio/mpeg" />
+                Tu navegador no soporta la reproducción de audio.
+            </audio> */}
         </div>
     )
 }

@@ -122,7 +122,7 @@ export const Perfil = ({ user = {} }) => {
       })
   }
 
-  const updateDatos = (nombre, telefono, correo, usuario, fechaNacimiento, color) => {
+  const updateDatos = (nombre, telefono, correo, usuario, fechaNacimiento, color, municipio) => {
     Axios.put(`${server}/update-empleado-datos`, {
       nombre: capitalize(nombre),
       telefono: telefono,
@@ -130,7 +130,8 @@ export const Perfil = ({ user = {} }) => {
       usuario: usuario,
       fechaNacimiento: validarFecha(fechaNacimiento),
       color: color,
-      id: user.id
+      id: user.id,
+      municipio: municipio
     }).then(() => {
       getEmpleado(user.id, setEmpleado)
       showAlert("Datos actualizados", 'success')
@@ -227,7 +228,7 @@ export const Perfil = ({ user = {} }) => {
           {empleado.estatus == 'D' && <span className='badge bg-primary'>Desaparecido</span>}
           {empleado.estatus == 'P' && <span className='badge bg-secondary'>Pausa</span>}
         </p>
-        <button id='btnActualizar' onClick={() => updateDatos(nombre, telefono, correo, usuario, fechaNacimiento, color)} className='d-none'>Actualizar</button>
+        <button id='btnActualizar' onClick={() => updateDatos(nombre, telefono, correo, usuario, fechaNacimiento, color, empleado.municipio)} className='d-none'>Actualizar</button>
       </div>
     </div>
   )

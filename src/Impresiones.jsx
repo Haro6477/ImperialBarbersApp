@@ -10,7 +10,7 @@ export const ImprimirTicket = (idCobro, descuento, subtotal, listaServicios = []
     let hh = date.getHours()
     let min = date.getMinutes()
     let ss = date.getSeconds()
-    if (hh < 10) hh = '0' + h;
+    if (hh < 10) hh = '0' + hh;
     if (min < 10) min = '0' + min;
     if (ss < 10) ss = '0' + ss;
 
