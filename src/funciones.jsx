@@ -5,6 +5,7 @@ import getClientes from './components/Clientes'
 import { ImprimirReporte, ImprimirTicket } from './Impresiones'
 
 const server = import.meta.env.VITE_SERVER
+const municipio = import.meta.env.VITE_MUNICIPIO
 // const server = 'http://localhost'
 
 const opciones = { weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: 'long' }
@@ -200,6 +201,7 @@ export const addCobro = (nombreCliente, nombreBarber, ptsCliente, descuento, sub
     pagoEfectivo: pagoEfectivo,
     pagoTarjeta: pagoTarjeta,
     pagoPuntos: pagoPuntos,
+    municipio: municipio
   }).then((res) => {
     ImprimirTicket(res.data.insertId, descuento, subtotal, listaServicios, listaProductos, total, pagoEfectivo, pagoTarjeta, pagoPuntos, nombreCliente, nombreBarber, Math.trunc(+ptsCliente + +ptsAcumulados))
     listaServicios.forEach(servicio => {
@@ -257,7 +259,8 @@ export const addCobro = (nombreCliente, nombreBarber, ptsCliente, descuento, sub
       Axios.put(`${server}/update-caja`, {
         efectivo: pagoEfectivo,
         dineroElectronico: pagoTarjeta,
-        puntos: pagoPuntos
+        puntos: pagoPuntos,
+        id: municipio
       })
     }
   }).finally(() => {
@@ -407,8 +410,10 @@ export const addReporte = (total, nombreBarber, movimientos, idBarber, montoEfec
         montoEfectivo: montoEfectivo,
         montoElectronico: montoElectronico,
         montoPts: montoPts,
+        municipio: municipio
       }).then(() => {
         Axios.put(`${server}/update-caja`, {
+          id: municipio,
           efectivo: - montoEfectivo,
           dineroElectronico: - montoElectronico,
           puntos: - montoPts
@@ -459,7 +464,8 @@ export const addMovimiento = (concepto, cantidad, idBarber, caja) => {
     Axios.put(`${server}/update-caja`, {
       efectivo: cantidad,
       dineroElectronico: 0,
-      puntos: 0
+      puntos: 0,
+      id: municipio
     })
   }).finally(() => {
     if (caja) window.location.reload()
