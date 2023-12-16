@@ -1,4 +1,4 @@
-export const BarraBusqueda = ({ datos = [], datos2, setDato, setDato2, txtInput = '', setTxtInput, placeholder, focus = false, cumple = false, setCumple, id }) => {
+export const BarraBusqueda = ({ idBarber, datos = [], datos2, setDato, txtInput = '', setTxtInput, placeholder, focus = false, cumple = false, setCumple, id }) => {
 
     const input = document.getElementById(`input${id}`)
     const selectDrop = document.getElementById(`drop${id}`)
@@ -49,13 +49,13 @@ export const BarraBusqueda = ({ datos = [], datos2, setDato, setDato2, txtInput 
         if (tipo == 'p') {
             const producto = (datos2.find((producto) => producto.id == id));
             producto.tipo = 'p'
-            producto.idBarber = 12
+            producto.idBarber = idBarber
             input.value = producto.nombre
             setDato(producto)
         } else {
             const servicio = (datos.find((servicio) => servicio.id == id));
             servicio.tipo = 's'
-            servicio.idBarber = 12
+            servicio.idBarber = idBarber
             input.value = servicio.nombre
             setDato(servicio)
         }

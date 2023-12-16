@@ -3,6 +3,7 @@ import '../estilos/forms.css'
 import { addCobro, showAlert } from '../funciones'
 import { ImprimirTicket } from '../Impresiones'
 import { BarraBusqueda } from './BarraBusqueda'
+import { FilaTablaVenta } from './filaTablaVenta'
 
 const Venta = ({ user }) => {
   // const server = 'http://localhost'
@@ -42,7 +43,6 @@ const Venta = ({ user }) => {
   const dropClientes = document.getElementById("drop1")
   const inputProServ = document.getElementById('input2')
   const dropProServ = document.getElementById("drop2")
-  const tbody = document.getElementById("tbody")
   const spanPts = document.getElementById('spanPts')
   const btnDividir = document.getElementById('btnDividir')
 
@@ -58,8 +58,10 @@ const Venta = ({ user }) => {
 
   const getEmpleados = () => {
     axios.get(`${server}/empleados/${municipio}`).then((response) => {
-      setEmpleados(response.data);
-      setEmpleado(response.data[0])
+      const empleadosMunicipio = (response.data)
+      const empleadosActivos = empleadosMunicipio.filter(empleado => empleado.estatus == "A");
+      setEmpleados(empleadosActivos);
+      setEmpleado(empleadosActivos[0])
     })
   }
 
@@ -96,40 +98,16 @@ const Venta = ({ user }) => {
   }
 
   const handleSubmit = () => {
-    if (inputProServ.value == "") { return }
+    if (inputProServ.value == "" || Object.keys(itemLista).length === 0) { return }
     dropClientes.className = classInputNone
     dropProServ.className = classInputNone
-    const tr = document.createElement("tr")
-    // itemLista.tipo == 'p' ? tr.dataset.id = listaProductos.length : tr.dataset.id = listaServicios.length
-    const tdCantidad = document.createElement("td")
-    const tdConcepto = document.createElement("td")
-    const tdPrecioUni = document.createElement("td")
-    const tdSubtotal = document.createElement("td")
-    const tdDividir = document.createElement("td")
-    const selectDividir = document.getElementById('select-empleado').cloneNode(true)
-    selectDividir.className = 'form-select d-none'
-    itemLista.tipo == 'p' ? selectDividir.id = `p${listaProductos.length}` : selectDividir.id = `s${listaServicios.length}`
-    // selectDividir.addEventListener('change', (e) => {
-    //   itemLista.tipo == 'p'
-    //     ? listaProductos[listaProductos.length - 1].idBarber = e.target.value
-    //     : listaServicios[listaServicios.length - 1].idBarber = e.target.value
-    // })
-
-    tdDividir.appendChild(selectDividir)
-    tdCantidad.innerText = cantidad
-    tdConcepto.innerText = itemLista.nombre
-    tdConcepto.className = 'text-start'
-    tdPrecioUni.innerText = itemLista.precio
-    tdSubtotal.innerText = itemLista.precio * cantidad
-    tr.appendChild(tdCantidad)
-    tr.appendChild(tdConcepto)
-    tr.appendChild(tdPrecioUni)
-    tr.appendChild(tdSubtotal)
-    tr.appendChild(tdDividir)
-    tbody.appendChild(tr)
-    itemLista.cantidad = cantidad
+    
+    const itemConCantidad = {
+      ...itemLista,
+      cantidad: cantidad
+    };
     inputProServ.value = ""
-    itemLista.tipo === 'p' ? setListaProductos(listaProductos.concat(itemLista)) : setListaServicios(listaServicios.concat(itemLista))
+    itemLista.tipo === 'p' ? setListaProductos(listaProductos.concat(itemConCantidad)) : setListaServicios(listaServicios.concat(itemConCantidad))
     setSubtotal(subtotal + itemLista.precio * cantidad)
     setPtsAcumulados(ptsAcumulados + itemLista.pts * cantidad)
     setItem({})
@@ -173,7 +151,6 @@ const Venta = ({ user }) => {
     inputProServ.value = ''
     setListaProductos([])
     setListaServicios([])
-    tbody.innerHTML = ''
     setSubtotal(0)
     setPtsAcumulados(0)
     inputCliente.focus()
@@ -184,14 +161,10 @@ const Venta = ({ user }) => {
     setTarjeta(0)
     setPts(0)
     setDescuento(0)
-    btnDividir.className = 'btn btn-danger'
-    btnDividir.innerText = 'Dividir'
-    const selects = document.getElementsByTagName('select')
-    for (let index = 2; index < selects.length - 1; index++) {
-      const element = selects[index];
-      element.className = 'd-none'
-    }
-    document.getElementById('select-empleado').className = 'form-select'
+    // btnDividir.className = 'btn btn-danger'
+    // btnDividir.innerText = 'Dividir'
+    setDivider(false)
+    
     conDescuento && document.getElementById('btnDescuento').click()
   }
 
@@ -200,33 +173,10 @@ const Venta = ({ user }) => {
     if (divider) {
       btnDividir.className = 'btn btn-danger'
       btnDividir.innerText = 'Dividir'
-      const selects = document.getElementsByTagName('select')
-      for (let index = 2; index < selects.length - 1; index++) {
-        const element = selects[index];
-        element.className = 'd-none'
-      }
-      selects[selects.length - 1].className = 'form-select'
     }
     else {
       btnDividir.className = 'btn btn-secondary'
       btnDividir.innerText = 'Cancelar'
-      const selects = document.getElementsByTagName('select')
-      for (let index = 2; index < selects.length - 1; index++) {
-        const element = selects[index];
-        element.className = 'form-select'
-        element.id[0] == 'p'
-          ? element.addEventListener('change', (e) => {
-            let listPro = listaProductos
-            listPro[element.id.substring(1)].idBarber = e.target.value
-            setListaProductos(listPro.map(producto => producto))
-          })
-          : element.addEventListener('change', (e) => {
-            let listServ = listaServicios
-            listServ[element.id.substring(1)].idBarber = e.target.value
-            setListaServicios(listServ.map(servicio => servicio))
-          })
-      }
-      selects[selects.length - 1].className = 'd-none'
     }
     setDivider(!divider)
   }
@@ -236,7 +186,7 @@ const Venta = ({ user }) => {
       <div className="row">
         <div className="col-sm-12 col-md-10">
           <div className='mb-3 mt-1'>
-            <BarraBusqueda datos={clientes} setDato={setCliente} txtInput={txtCliente} setTxtInput={setTxtCliente} placeholder={'Clientes'} focus={true} cumple={cumple} setCumple={setCumple} id={1}></BarraBusqueda>
+            <BarraBusqueda idBarber={empleado.id} datos={clientes} setDato={setCliente} txtInput={txtCliente} setTxtInput={setTxtCliente} placeholder={'Clientes'} focus={true} cumple={cumple} setCumple={setCumple} id={1}></BarraBusqueda>
           </div>
         </div>
         <div className="col-sm-8 col-md-2 mb-3 pt-1">
@@ -255,7 +205,7 @@ const Venta = ({ user }) => {
         </div>
 
         <div className="col-8 my-2">
-          <BarraBusqueda datos={servicios} datos2={productos} setDato={setItem} txtInput={txtProServ} setTxtInput={setTxtProServ} placeholder={'Servicios y productos'} id={2}></BarraBusqueda>
+          <BarraBusqueda idBarber={empleado.id} datos={servicios} datos2={productos} setDato={setItem} txtInput={txtProServ} setTxtInput={setTxtProServ} placeholder={'Servicios y productos'} id={2}></BarraBusqueda>
         </div>
 
         <div className="col-8 col-md-2 d-flex mx-auto my-2">
@@ -273,10 +223,17 @@ const Venta = ({ user }) => {
               <th className='text-start'>Servicio o Producto</th>
               <th>Precio c/u</th>
               <th>Subtotal</th>
-              <th className='text-end'><button onClick={() => mostrarSelects()} className='btn btn-outline-danger' id='btnDividir' >Dividir</button></th>
+              <th className='text-end'><button onClick={() => mostrarSelects()} className={!divider ? 'btn btn-outline-danger' : 'btn btn-secondary'} id='btnDividir' >Dividir</button></th>
             </tr>
           </thead>
-          <tbody id='tbody'></tbody>
+          <tbody>
+            {listaServicios.map((servicio, i) => (
+              <FilaTablaVenta key={i} divider={divider} item={servicio} listaItems={listaServicios} setLista={setListaServicios} empleados={empleados} index={i}></FilaTablaVenta>
+            ))}
+            {listaProductos.map((producto, i) => (
+              <FilaTablaVenta key={i} divider={divider} item={producto} listaItems={listaProductos} setLista={setListaProductos} empleados={empleados} index={i}></FilaTablaVenta>
+            ))}
+          </tbody>
           <tfoot className='table-secondary h5'>
             <tr>
               <td></td><td></td><td></td>
@@ -304,7 +261,7 @@ const Venta = ({ user }) => {
 
       </div>
 
-      <div className='row mb-4 border rounded py-3 px-3 shadow-sm d-flex' style={{background:'#dae0e8'}}>
+      <div className='row mb-4 border rounded py-3 px-3 shadow-sm d-flex' style={{ background: '#dae0e8' }}>
         <div className="col">
           <h5 className='mb-3'>Método de pago</h5>
           <div className="row ">
@@ -380,21 +337,26 @@ const Venta = ({ user }) => {
           </div>
         }
         <div className="col-md-6 text-end my-3">
-          <div className="row">
-            <div className="col-11">
-              <select value={empleado.id} className='form-select' name="select-empleado" id="select-empleado"
-                onChange={(e) => { obtenerEmpleado(e.target.value) }}
-              >
-                <option disabled>Empleado que realizó el servicio</option>
-                {empleados.map((empleado) => (
-                  (empleado.id != '1' && empleado.estatus == 'A') && <option style={{ background: empleado.color, color: (empleado.color ? '#ffffff' : '#000000') }} key={empleado.id} value={empleado.id} >{empleado.nombre}</option>
-                ))}
-              </select>
+          {!divider &&
+            <div className="row">
+              <div className="col-11">
+                {empleado &&
+                  <select value={empleado.id} className='form-select' name="select-empleado" id="select-empleado"
+                    onChange={(e) => { obtenerEmpleado(e.target.value) }}>
+                    <option disabled>Empleado que realizó el servicio</option>
+                    {empleados.map((empleado) => (
+                      <option style={{ background: empleado.color, color: (empleado.color ? '#ffffff' : '#000000') }} key={empleado.id} value={empleado.id} >{empleado.nombre}</option>
+                    ))}
+                  </select>
+                }
+              </div>
+              {empleado &&
+                <div className="col-1 rounded-pill text-center text-white pt-1" style={{ background: empleado.color, width: '38px', height: '38px' }}>
+                  <span className='h5'>{empleado.nombre ? empleado.nombre.substring(0, 1) : ''}</span>
+                </div>
+              }
             </div>
-            <div className="col-1 rounded-pill text-center text-white pt-1" style={{ background: empleado.color, width: '38px', height: '38px' }}>
-              <span className='h5'>{empleado.nombre ? empleado.nombre.substring(0, 1) : ''}</span>
-            </div>
-          </div>
+          }
           {((listaProductos.length != 0 || listaServicios.length != 0) && Object.keys(cliente).length > 0) && <button onClick={nuevoCobro} className='btn btn-success w-75 my-3'>Registrar</button>}
         </div>
       </div>

@@ -23,13 +23,17 @@ function App() {
     axios.get(instruccion).then((response) => {
       if (response.data[0]) {
         setUser(response.data[0])
+        axios.put(`${server}/cambio-municipio`, {
+          id: response.data[0].id,
+          municipio: municipio
+        })
         axios.get(`${server}/chequeo/${response.data[0].id}`).then((resGet) => {
           if (!resGet.data[0]) {
             axios.post(`${server}/create-chequeos`, {
               idBarber: response.data[0].id,
               municipio: municipio
             }).then((resCreate) => {
-              showAlert('Hora de llegada:\n' + (new Date).toLocaleTimeString('es-mx', {hour12:true}), 'success')
+              showAlert('Hora de llegada:\n' + (new Date).toLocaleTimeString('es-mx', { hour12: true }), 'success')
             })
           }
         })

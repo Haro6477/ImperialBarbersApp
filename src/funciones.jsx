@@ -188,7 +188,6 @@ export const updateFotoEmpleado = (formdata, id) => {
 }
 
 export const addCobro = (nombreCliente, nombreBarber, ptsCliente, descuento, subtotal, divider, getClientes, idCliente, total, ptsAcumulados, metodoPago, idBarber, idCobrador, pagoEfectivo, pagoTarjeta = 0, pagoPuntos = 0, listaProductos, listaServicios) => {
-  if (idBarber == 1) idBarber = 12
   Axios.post(`${server}/create-cobro`, {
     idCliente: idCliente,
     total: total,
@@ -196,7 +195,7 @@ export const addCobro = (nombreCliente, nombreBarber, ptsCliente, descuento, sub
     subtotal: subtotal,
     totalPuntos: ptsAcumulados,
     metodoPago: metodoPago,
-    idBarber: idBarber,
+    idBarber: divider ? 7 : idBarber,
     idCobrador: idCobrador,
     pagoEfectivo: pagoEfectivo,
     pagoTarjeta: pagoTarjeta,
@@ -205,47 +204,24 @@ export const addCobro = (nombreCliente, nombreBarber, ptsCliente, descuento, sub
   }).then((res) => {
     ImprimirTicket(res.data.insertId, descuento, subtotal, listaServicios, listaProductos, total, pagoEfectivo, pagoTarjeta, pagoPuntos, nombreCliente, nombreBarber, Math.trunc(+ptsCliente + +ptsAcumulados))
     listaServicios.forEach(servicio => {
-      if (divider) {
         Axios.post(`${server}/create-detalle-servicio`, {
           idCobro: res.data.insertId,
           idServicio: servicio.id,
           cantidad: servicio.cantidad,
           precioActual: servicio.precio,
           puntosActual: servicio.pts,
-          idBarber: servicio.idBarber
+          idBarber: divider ? servicio.idBarber : idBarber
         })
-      } else {
-        Axios.post(`${server}/create-detalle-servicio`, {
-          idCobro: res.data.insertId,
-          idServicio: servicio.id,
-          cantidad: servicio.cantidad,
-          precioActual: servicio.precio,
-          puntosActual: servicio.pts,
-          idBarber: idBarber
-        })
-      }
-
     });
     listaProductos.forEach(producto => {
-      if (divider) {
         Axios.post(`${server}/create-detalle-producto`, {
           idCobro: res.data.insertId,
           idProducto: producto.id,
           cantidad: producto.cantidad,
           precioActual: producto.precio,
           puntosActual: producto.pts,
-          idBarber: producto.idBarber
+          idBarber: divider ? producto.idBarber : idBarber
         })
-      } else {
-        Axios.post(`${server}/create-detalle-producto`, {
-          idCobro: res.data.insertId,
-          idProducto: producto.id,
-          cantidad: producto.cantidad,
-          precioActual: producto.precio,
-          puntosActual: producto.pts,
-          idBarber: idBarber
-        })
-      }
       Axios.put(`${server}/update-inventario`, {
         cantidad: - producto.cantidad,
         id: producto.id,
