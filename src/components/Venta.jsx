@@ -97,6 +97,22 @@ const Venta = ({ user }) => {
     setEmpleado(empleados.find((e) => e.id == id))
   }
 
+  useEffect(() => {
+    let suma = 0
+    let puntos = 0
+
+    listaProductos.forEach((producto) => {
+      suma += producto.precio * producto.cantidad
+      puntos += producto.puntos * producto.cantidad
+    })
+    listaServicios.forEach((servicio) => {
+      suma += servicio.precio * servicio.cantidad
+      puntos += servicio.puntos * servicio.cantidad
+    })
+    setSubtotal(suma)
+    setPtsAcumulados(puntos)
+  }, [listaProductos, listaServicios]);
+
   const handleSubmit = () => {
     if (inputProServ.value == "" || Object.keys(itemLista).length === 0) { return }
     dropClientes.className = classInputNone
@@ -108,8 +124,8 @@ const Venta = ({ user }) => {
     };
     inputProServ.value = ""
     itemLista.tipo === 'p' ? setListaProductos(listaProductos.concat(itemConCantidad)) : setListaServicios(listaServicios.concat(itemConCantidad))
-    setSubtotal(subtotal + itemLista.precio * cantidad)
-    setPtsAcumulados(ptsAcumulados + itemLista.pts * cantidad)
+    // setSubtotal(subtotal + itemLista.precio * cantidad)
+    // setPtsAcumulados(ptsAcumulados + itemLista.pts * cantidad)
     setItem({})
     setCantidad(1)
     if (listaProductos.length + listaServicios.length >= 1) {
@@ -186,7 +202,7 @@ const Venta = ({ user }) => {
       <div className="row">
         <div className="col-sm-12 col-md-10">
           <div className='mb-3 mt-1'>
-            <BarraBusqueda idBarber={empleado.id} datos={clientes} setDato={setCliente} txtInput={txtCliente} setTxtInput={setTxtCliente} placeholder={'Clientes'} focus={true} cumple={cumple} setCumple={setCumple} id={1}></BarraBusqueda>
+            <BarraBusqueda idBarber={empleado && empleado.id} datos={clientes} setDato={setCliente} txtInput={txtCliente} setTxtInput={setTxtCliente} placeholder={'Clientes'} focus={true} cumple={cumple} setCumple={setCumple} id={1}></BarraBusqueda>
           </div>
         </div>
         <div className="col-sm-8 col-md-2 mb-3 pt-1">
@@ -205,7 +221,7 @@ const Venta = ({ user }) => {
         </div>
 
         <div className="col-8 my-2">
-          <BarraBusqueda idBarber={empleado.id} datos={servicios} datos2={productos} setDato={setItem} txtInput={txtProServ} setTxtInput={setTxtProServ} placeholder={'Servicios y productos'} id={2}></BarraBusqueda>
+          <BarraBusqueda idBarber={empleado && empleado.id} datos={servicios} datos2={productos} setDato={setItem} txtInput={txtProServ} setTxtInput={setTxtProServ} placeholder={'Servicios y productos'} id={2}></BarraBusqueda>
         </div>
 
         <div className="col-8 col-md-2 d-flex mx-auto my-2">
@@ -215,11 +231,11 @@ const Venta = ({ user }) => {
         </div>
       </div>
 
-      <div className="shadow-sm resumen rounded border my-3">
-        <table className="table table-borderless ">
+      <div className="shadow-sm resumen rounded border my-3 table-responsive">
+        <table className="table table-borderless align-middle">
           <thead className='table-dark align-middle'>
             <tr>
-              <th>Cantidad</th>
+              <th className='text-start ps-5' style={{maxWidth:'10rem'}}>Cantidad</th>
               <th className='text-start'>Servicio o Producto</th>
               <th>Precio c/u</th>
               <th>Subtotal</th>
@@ -345,7 +361,7 @@ const Venta = ({ user }) => {
                     onChange={(e) => { obtenerEmpleado(e.target.value) }}>
                     <option disabled>Empleado que realizó el servicio</option>
                     {empleados.map((empleado) => (
-                      <option style={{ background: empleado.color, color: (empleado.color ? '#ffffff' : '#000000') }} key={empleado.id} value={empleado.id} >{empleado.nombre}</option>
+                      <option className='' style={{ backgroundColor: empleado.color, color: (empleado.color ? '#ffffff' : '#000000') }} key={empleado.id} value={empleado.id} >{empleado.nombre}</option>
                     ))}
                   </select>
                 }

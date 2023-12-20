@@ -18,7 +18,7 @@ function App() {
   const [user, setUser] = useLocalStorage('user', null)
 
   const login = (usuario, pass) => {
-    let empleado = {}
+    usuario = usuario.trim()
     const instruccion = server + '/auth/' + usuario + '/' + pass
     axios.get(instruccion).then((response) => {
       if (response.data[0]) {

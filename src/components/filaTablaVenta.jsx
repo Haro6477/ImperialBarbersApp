@@ -35,13 +35,13 @@ export const FilaTablaVenta = ({ divider = false, item, listaItems = [], setList
 
   return (
     <tr>
-      <td>
-        <div className="row">
-          <div className="col"><i className="fa-solid fa-trash " style={{ color: '#c81919', cursor:'pointer' }} onClick={() => { quitarItem() }}></i></div>
-          <div className="col"><input onChange={(e) => cambiarCantidadFila(e.target.value)} type="number" className='form-control shadow border border-secondary' style={{ maxWidth: '5rem' }} min={1} value={item.cantidad} /></div>
+      <td className='text-start'>
+        <div className="row ps-3" style={{maxWidth:'10rem'}}>
+          <div className="col-md-4"><i className="fa-solid fa-trash align-middle" style={{ color: '#c81919', cursor:'pointer' }} onClick={() => { quitarItem() }}></i></div>
+          <div className="col-md-8"><input onChange={(e) => cambiarCantidadFila(e.target.value)} type="number" className='form-control-sm shadow border border-secondary w-100' min={1} value={item.cantidad} /></div>
         </div>
       </td>
-      <td>{item.nombre}</td>
+      <td className='text-start'>{item.nombre}</td>
       <td>{item.precio}</td>
       <td>{item.precio * item.cantidad}</td>
       {divider &&

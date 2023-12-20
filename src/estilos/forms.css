@@ -42,12 +42,9 @@
     
 }
 
-
 .background {
     background: linear-gradient(to left, #9ea3fd, #e1e2ff);
 }
-
-
 
 .cumple {
     background: 50% 100%/50% 50% no-repeat radial-gradient(ellipse at bottom, #86bfff, transparent, transparent);
