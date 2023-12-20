@@ -278,7 +278,7 @@ const Caja = ({ user }) => {
       }
 
       <div className="my-4 position-fixed bottom-0 end-0  me-5">
-        <button onClick={() => addReporte(efectivo + dineroElectronico, empleado.nombre, movimientos, user.id, efectivo, dineroElectronico, pts)} className='btn btn-danger'><strong>Realizar reporte</strong></button>
+        <button onClick={() => addReporte(+efectivo + +dineroElectronico, empleado.nombre, movimientos, user.id, efectivo, dineroElectronico, pts)} className='btn btn-danger'><strong>Realizar reporte</strong></button>
       </div>
 
       {!historial
