@@ -437,6 +437,7 @@ export const addMovimiento = (concepto, cantidad, idBarber, caja) => {
     concepto: concepto,
     cantidad: cantidad,
     idUsuario: idBarber,
+    municipio: municipio
   }).then(() => {
     Axios.put(`${server}/update-caja`, {
       efectivo: cantidad,

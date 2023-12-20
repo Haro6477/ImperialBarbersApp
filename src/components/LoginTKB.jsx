@@ -33,7 +33,7 @@ export const LoginTKB = ({ login }) => {
                 <div className="card bg-dark text-white ">
                     <div className="card-body p-4 text-center ">
                         <div className="px-5">
-                            <img src='../src/images/logo-dark.png' alt="" className='w-75' />
+                            <img src='../src/images/Logotipo3.png' alt="" className='w-75' />
                             <p className="text-white-50 mb-3">Ingresa tu nombre de usuario y contraseña</p>
 
                             {/* <button onClick={logout()} className="btn btn-outline-secondary btn-lg px-5" >Cerrar sesión</button> */}

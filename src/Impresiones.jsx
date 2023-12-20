@@ -22,7 +22,7 @@ export const ImprimirTicket = (idCobro, descuento, subtotal, listaServicios = []
         .Iniciar()
         .DeshabilitarElModoDeCaracteresChinos()
         .EstablecerAlineacion(ConectorPluginV3.ALINEACION_CENTRO)
-    conector.CargarImagenLocalEImprimir('C:/Users/TheKingBarber/Pictures/darkLogo.png', 0, 216)
+    conector.CargarImagenLocalEImprimir('C:/Users/TheKingBarber/Pictures/darkLogoImperial.png', 0, 216)
         .Feed(1)
         .EscribirTexto("The King Barber\n")
         .TextoSegunPaginaDeCodigos(2, "cp850", "Av. Hidalgo 411, Teziutlán, Pue. 73800 Teziutlán Centro\n")
