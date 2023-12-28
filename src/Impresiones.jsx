@@ -71,6 +71,7 @@ export const ImprimirTicket = (idCobro, descuento, subtotal, listaServicios = []
         .EscribirTexto("________________________________\n")
         .EscribirTexto("________________________________\n\n")
         .TextoSegunPaginaDeCodigos(2, "cp850", "Número del programador:\n231 117 1737")
+        .Pulso(49,60,120)
         .imprimirEn("Termica2");
     if (respuesta) {
     } else {
