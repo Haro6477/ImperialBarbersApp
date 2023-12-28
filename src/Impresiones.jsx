@@ -24,7 +24,7 @@ export const ImprimirTicket = (idCobro, descuento, subtotal, listaServicios = []
         .EstablecerAlineacion(ConectorPluginV3.ALINEACION_CENTRO)
     conector.CargarImagenLocalEImprimir('C:/Users/TheKingBarber/Pictures/darkLogoImperial.png', 0, 216)
         .Feed(1)
-        .EscribirTexto("The King Barber\n")
+        .EscribirTexto("IMPERIAL BARBERS\n")
         .TextoSegunPaginaDeCodigos(2, "cp850", "Av. Hidalgo 411, Teziutlán, Pue. 73800 Teziutlán Centro\n")
         .TextoSegunPaginaDeCodigos(2, "cp850", "Teléfono: 231 176 2907\n\n")
         .EscribirTexto("Atendido por:\n" + barber + "\n")
@@ -137,7 +137,8 @@ export const ImprimirReporte = (total, efectivo, tarjeta, puntosCanjeados, barbe
         conector.EscribirTexto("________________________________\n")
             .EscribirTexto("$" + totalRetiros + ".00\n")
     }
-    conector.imprimirEn("Termica2");
+    conector.imprimirEn("Termica2")
+        .Pulso(48, 60, 120);
     if (respuesta) {
     } else {
         alert("Error: " + respuesta);
