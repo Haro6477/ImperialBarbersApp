@@ -137,8 +137,8 @@ export const ImprimirReporte = (total, efectivo, tarjeta, puntosCanjeados, barbe
         conector.EscribirTexto("________________________________\n")
             .EscribirTexto("$" + totalRetiros + ".00\n")
     }
+    conector.Pulso(49, 60, 120)
     conector.imprimirEn("Termica2")
-        .Pulso(48, 60, 120);
     if (respuesta) {
     } else {
         alert("Error: " + respuesta);
