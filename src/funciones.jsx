@@ -3,6 +3,8 @@ import withReactContent from 'sweetalert2-react-content'
 import Axios from 'axios'
 import getClientes from './components/Clientes'
 import { ImprimirReporte, ImprimirTicket } from './Impresiones'
+import { ConectorPluginV3 } from './plugin'
+
 
 const server = import.meta.env.VITE_SERVER
 const municipio = import.meta.env.VITE_MUNICIPIO
@@ -204,24 +206,24 @@ export const addCobro = (nombreCliente, nombreBarber, ptsCliente, descuento, sub
   }).then((res) => {
     ImprimirTicket(res.data.insertId, descuento, subtotal, listaServicios, listaProductos, total, pagoEfectivo, pagoTarjeta, pagoPuntos, nombreCliente, nombreBarber, Math.trunc(+ptsCliente + +ptsAcumulados))
     listaServicios.forEach(servicio => {
-        Axios.post(`${server}/create-detalle-servicio`, {
-          idCobro: res.data.insertId,
-          idServicio: servicio.id,
-          cantidad: servicio.cantidad,
-          precioActual: servicio.precio,
-          puntosActual: servicio.pts,
-          idBarber: divider ? servicio.idBarber : idBarber
-        })
+      Axios.post(`${server}/create-detalle-servicio`, {
+        idCobro: res.data.insertId,
+        idServicio: servicio.id,
+        cantidad: servicio.cantidad,
+        precioActual: servicio.precio,
+        puntosActual: servicio.pts,
+        idBarber: divider ? servicio.idBarber : idBarber
+      })
     });
     listaProductos.forEach(producto => {
-        Axios.post(`${server}/create-detalle-producto`, {
-          idCobro: res.data.insertId,
-          idProducto: producto.id,
-          cantidad: producto.cantidad,
-          precioActual: producto.precio,
-          puntosActual: producto.pts,
-          idBarber: divider ? producto.idBarber : idBarber
-        })
+      Axios.post(`${server}/create-detalle-producto`, {
+        idCobro: res.data.insertId,
+        idProducto: producto.id,
+        cantidad: producto.cantidad,
+        precioActual: producto.precio,
+        puntosActual: producto.pts,
+        idBarber: divider ? producto.idBarber : idBarber
+      })
       Axios.put(`${server}/update-inventario`, {
         cantidad: - producto.cantidad,
         id: producto.id,
@@ -266,7 +268,7 @@ export const addDetalleProducto = (idCobro, idProducto, cantidad, precioActual, 
   })
 }
 
-export const getActividadSemana = (id, setServiciosSemana, setProductosSemana, setServicios, setProductos,  calcularTotal) => {
+export const getActividadSemana = (id, setServiciosSemana, setProductosSemana, setServicios, setProductos, calcularTotal) => {
   let lista1 = [], lista2 = []
   setServicios([])
   setProductos([])
@@ -447,6 +449,14 @@ export const addMovimiento = (concepto, cantidad, idBarber, caja) => {
     })
   }).finally(() => {
     if (caja) window.location.reload()
+    const conector = new ConectorPluginV3();
+    const respuesta = conector
+      .Iniciar()
+      .Pulso(49,60,120)
+    if (respuesta) {
+    } else {
+      alert("Error: " + respuesta);
+    }
     showAlert("Movimiento registrado con éxito", 'success')
   })
 }
@@ -494,7 +504,7 @@ export const iniciarDescanso = (id, getDescanso) => {
   Axios.put(`${server}/iniciar-descanso`, {
     idBarber: id
   }).then((res) => {
-    showAlert("Descanso iniciado:\n" + (new Date).toLocaleTimeString('es-mx', {hour12:true}), 'success')
+    showAlert("Descanso iniciado:\n" + (new Date).toLocaleTimeString('es-mx', { hour12: true }), 'success')
     getDescanso()
   })
 }
@@ -502,7 +512,7 @@ export const finalizarDescanso = (id, getDescanso) => {
   Axios.put(`${server}/finalizar-descanso`, {
     idBarber: id
   }).then((res) => {
-    showAlert("Descanso finalizado:\n" + (new Date).toLocaleTimeString('es-mx', {hour12:true}), 'success')
+    showAlert("Descanso finalizado:\n" + (new Date).toLocaleTimeString('es-mx', { hour12: true }), 'success')
     getDescanso()
   })
 }
@@ -510,7 +520,7 @@ export const registrarSalida = (id, logout) => {
   Axios.put(`${server}/registrar-salida`, {
     idBarber: id
   }).then((res) => {
-    showAlert("Salida:\n" + (new Date).toLocaleTimeString('es-mx', {hour12:true}), 'success')
+    showAlert("Salida:\n" + (new Date).toLocaleTimeString('es-mx', { hour12: true }), 'success')
     logout()
   })
 }
