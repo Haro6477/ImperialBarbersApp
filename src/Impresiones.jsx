@@ -140,7 +140,7 @@ export const ImprimirReporte = (total, efectivo, tarjeta, puntosCanjeados, barbe
         conector.EscribirTexto("________________________________\n")
             .EscribirTexto("$" + totalRetiros + ".00\n")
     }
-    conector.imprimirEn("Termica");
+    conector.imprimirEn("Termica2");
     if (respuesta) {
     } else {
         alert("Error: " + respuesta);
