@@ -77,7 +77,7 @@ const Caja = ({ user }) => {
     setDescuento(descuento)
     setTotalPuntos(totalPuntos)
     setMetodoPago(metodoPago)
-    setBarber(barber == "equipo" ? "Equipo" : barber)
+    setBarber(barber ? barber : "Equipo")
     setCobrador(cobrador)
     setFecha(fecha)
     setPagoEfectivo(pagoEfectivo)
@@ -132,7 +132,7 @@ const Caja = ({ user }) => {
             const tdTotal = document.createElement('td')
             tdCliente.innerText = cobro.cliente
             tdCliente.className = 'text-start'
-            tdBarber.innerText = cobro.barber == "equipo" ? 'Trabajo en equipo' : cobro.barber
+            tdBarber.innerText = cobro.barber ? cobro.barber : 'Trabajo en equipo'
             tdBarber.className = 'text-start'
             tdTotal.innerText = '$ ' + cobro.total
             switch (cobro.metodoPago) {
@@ -229,13 +229,13 @@ const Caja = ({ user }) => {
                 {cobrosHoy.map((cobro) => (
                   <tr key={cobro.id} className='hover' data-bs-toggle='modal' data-bs-target='#modal-cobros'
                     onClick={() => openModal(cobro.id, cobro.cliente, cobro.total, cobro.subtotal, cobro.descuento, cobro.totalPuntos, cobro.metodoPago, cobro.barber, cobro.cobrador, cobro.fecha, cobro.pagoEfectivo, cobro.pagoTarjeta, cobro.pagoPuntos)}>
-                    {cobro.cliente == "Cliente de pruebas" ? <td className='text-start text-secondary'>{cobro.cliente}</td> : <td className='text-start'>{cobro.cliente}</td>}
-                    {cobro.cliente == "Cliente de pruebas" ? <td className='text-start text-secondary'>{cobro.barber == "equipo" ? "Trabajo en equipo" : cobro.barber}</td> : <td className='text-start'>{cobro.barber == "equipo" ? "Trabajo en equipo" : cobro.barber}</td>}
-                    {cobro.metodoPago == 'e' ? <td> <span className={cobro.cliente == "Cliente de pruebas" ? 'badge text-secondary' : 'badge bg-success'}>Efectivo</span></td>
+                    {cobro.cliente == "Cliente De Pruebas" ? <td className='text-start text-secondary'>{cobro.cliente}</td> : <td className='text-start'>{cobro.cliente}</td>}
+                    {cobro.cliente == "Cliente De Pruebas" ? <td className='text-start text-secondary'>{cobro.barber ? cobro.barber : "Trabajo en equipo"}</td> : <td className='text-start'>{cobro.barber ? cobro.barber : "Trabajo en equipo"}</td>}
+                    {cobro.metodoPago == 'e' ? <td> <span className={cobro.cliente == "Cliente De Pruebas" ? 'badge text-secondary' : 'badge bg-success'}>Efectivo</span></td>
                       : cobro.metodoPago == 't' ? <td><span className='badge bg-info'>Tarjeta</span></td>
                         : cobro.metodoPago == 'p' ? <td><span className='badge bg-danger'>Puntos</span></td>
                           : <td><span className='badge bg-warning'>Mixto</span></td>}
-                    {cobro.cliente == "Cliente de pruebas" ? <td className='text-secondary'>${cobro.total}</td> : <td>${cobro.total}</td>}
+                    {cobro.cliente == "Cliente De Pruebas" ? <td className='text-secondary'>${cobro.total}</td> : <td>${cobro.total}</td>}
                   </tr>
                 ))}
               </tbody>
@@ -331,7 +331,7 @@ const Caja = ({ user }) => {
                         : metodoPago == 'p' ? <span className='text-danger'>{pagoPuntos} pts.</span>
                           : <div><span className='text-success'>Efectivo: ${pagoEfectivo}</span><span className='text-primary'> Tarjeta: ${pagoTarjeta} </span> <span className='text-danger'> Puntos: ${pagoPuntos}</span></div>}
                   </h6>
-                  <h5 className='mt-2 text-info'>Barbero que lo atendió </h5><span className='h6'>{barber == "equipo" ? "Equipo" : barber}</span>
+                  <h5 className='mt-2 text-info'>Barbero que lo atendió </h5><span className='h6'>{barber ? barber : "Equipo"}</span>
                   <h5 className='mt-2 text-info'>Quién cobró </h5><span className='h6'>{cobrador}</span>
                 </div>
                 <div className="col-8">

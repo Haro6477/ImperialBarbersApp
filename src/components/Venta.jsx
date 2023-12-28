@@ -103,11 +103,11 @@ const Venta = ({ user }) => {
 
     listaProductos.forEach((producto) => {
       suma += producto.precio * producto.cantidad
-      puntos += producto.puntos * producto.cantidad
+      puntos += producto.pts * producto.cantidad
     })
     listaServicios.forEach((servicio) => {
       suma += servicio.precio * servicio.cantidad
-      puntos += servicio.puntos * servicio.cantidad
+      puntos += servicio.pts * servicio.cantidad
     })
     setSubtotal(suma)
     setPtsAcumulados(puntos)
