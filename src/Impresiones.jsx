@@ -27,7 +27,7 @@ export const ImprimirTicket = (idCobro, descuento, subtotal, listaServicios = []
     if(municipio == 1){
         conector.CargarImagenLocalEImprimir('C:/Users/TheKingBarber/Pictures/darkLogoImperial.png', 0, 216)
     } else{
-        conector.CargarImagenLocalEImprimir('C:\Users\imper\Pictures/darkLogoImperial.png', 0, 216)
+        conector.CargarImagenLocalEImprimir('C:/Users/imper/Pictures/darkLogoImperial.png', 0, 216)
     }
         conector.Feed(1)
         .EscribirTexto("IMPERIAL BARBERS\n")
