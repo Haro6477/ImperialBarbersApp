@@ -2,7 +2,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import Axios from 'axios'
 import getClientes from './components/Clientes'
-import { ImprimirReporte, ImprimirTicket } from './Impresiones'
+import { ImprimirReporte, ImprimirTicket, abrirCajon, abrirCajon2 } from './Impresiones'
 import { ConectorPluginV3 } from './plugin'
 
 
@@ -19,6 +19,45 @@ export function showAlert(mensaje, icono, foco = '') {
     title: mensaje,
     icon: icono
   });
+}
+export function showAlertBtn(title, icono, text, foco = '', idCobro, descuento, subtotal, listaServicios = [], listaProductos = [], total, pagoEfectivo = 0, pagoTarjeta = 0, pagoPts = 0, cliente, barber, pts) {
+  onfocus(foco);
+  const MySwal = withReactContent(Swal);
+  MySwal.fire({
+    title: title,
+    text: text,
+    icon: icono,
+    showConfirmButton: true,
+    confirmButtonText: 'Reeimprimir',
+    showDenyButton: true, 
+    denyButtonText: 'Cerrar', 
+    focusDeny: true, 
+  }).then((result) => {
+    if (result.isConfirmed) {
+      MostrarDatos(idCobro, descuento, subtotal, listaServicios = [], listaProductos = [], total, pagoEfectivo = 0, pagoTarjeta = 0, pagoPts = 0, cliente, barber, pts)
+    } else {
+      MySwal.close();
+    }
+  })
+}
+
+function MostrarDatos(idCobro, descuento, subtotal, listaServicios = [], listaProductos = [], total, pagoEfectivo = 0, pagoTarjeta = 0, pagoPts = 0, cliente, barber, pts) {
+  console.log("idCobro: " + idCobro);
+  console.log("descuento: " + descuento)
+  console.log("subtotal: " + subtotal)
+  console.log("total: " + total)
+  console.log("pagoEfectivo: " + pagoEfectivo);
+  console.log("pagoTarjeta: " + pagoTarjeta);
+  console.log("pagoPts: " + pagoPts);
+  console.log("clientes: " + cliente)
+  console.log("barber: " + barber)
+  console.log("pts: " + pts)
+  listaProductos.forEach(producto => {
+    console.log(producto)
+  })
+  listaServicios.forEach(servicio => {
+    console.log(servicio)
+  })
 }
 
 function onfocus(foco) {
@@ -205,6 +244,9 @@ export const addCobro = (nombreCliente, nombreBarber, ptsCliente, descuento, sub
     municipio: municipio
   }).then((res) => {
     ImprimirTicket(res.data.insertId, descuento, subtotal, listaServicios, listaProductos, total, pagoEfectivo, pagoTarjeta, pagoPuntos, nombreCliente, nombreBarber, Math.trunc(+ptsCliente + +ptsAcumulados))
+    idCliente != '122'
+      ? showAlertBtn("Venta registrada", 'success', "¿Desea reeimprimir el Ticket?", undefined, res.data.insertId, descuento, subtotal, listaServicios, listaProductos, total, pagoEfectivo, pagoTarjeta, pagoPuntos, nombreCliente, nombreBarber, Math.trunc(+ptsCliente + +ptsAcumulados))
+      : showAlertBtn("Venta de prueba", 'info', "¿Desea reeimprimir el Ticket?", undefined, res.data.insertId, descuento, subtotal, listaServicios, listaProductos, total, pagoEfectivo, pagoTarjeta, pagoPuntos, nombreCliente, nombreBarber, Math.trunc(+ptsCliente + +ptsAcumulados))
     listaServicios.forEach(servicio => {
       Axios.post(`${server}/create-detalle-servicio`, {
         idCobro: res.data.insertId,
@@ -243,7 +285,6 @@ export const addCobro = (nombreCliente, nombreBarber, ptsCliente, descuento, sub
     }
   }).finally(() => {
     getClientes()
-    idCliente != '122' ? showAlert("Venta registrada", 'success') : showAlert("Venta de prueba", 'info')
   })
 }
 
@@ -434,7 +475,7 @@ export const getDetallesPro = (idCobro, setDetalles) => {
   })
 }
 
-export const addMovimiento = (concepto, cantidad, idBarber, caja) => {
+export const addMovimiento = (concepto, cantidad, idBarber, caja, cajon) => {
   Axios.post(`${server}/create-movimiento`, {
     concepto: concepto,
     cantidad: cantidad,
@@ -449,13 +490,10 @@ export const addMovimiento = (concepto, cantidad, idBarber, caja) => {
     })
   }).finally(() => {
     if (caja) window.location.reload()
-    const conector = new ConectorPluginV3();
-    const respuesta = conector
-      .Iniciar()
-      .Pulso(49,60,120)
-    if (respuesta) {
-    } else {
-      alert("Error: " + respuesta);
+    if(cajon == 1){
+      abrirCajon()
+    }else{
+      abrirCajon2()
     }
     showAlert("Movimiento registrado con éxito", 'success')
   })

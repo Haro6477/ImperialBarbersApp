@@ -24,18 +24,18 @@ export const ImprimirTicket = (idCobro, descuento, subtotal, listaServicios = []
         .Iniciar()
         .DeshabilitarElModoDeCaracteresChinos()
         .EstablecerAlineacion(ConectorPluginV3.ALINEACION_CENTRO)
-    if(municipio == 1){
+    if (municipio == 1) {
         conector.CargarImagenLocalEImprimir('C:/Users/TheKingBarber/Pictures/darkLogoImperial.png', 0, 216)
-    } else{
+    } else {
         conector.CargarImagenLocalEImprimir('C:/Users/imper/Pictures/darkLogoImperial.png', 0, 216)
     }
-        conector.Feed(1)
+    conector.Feed(1)
         .EscribirTexto("IMPERIAL BARBERS\n")
     if (municipio == 1) {
         conector.TextoSegunPaginaDeCodigos(2, "cp850", "Av. Hidalgo 411, Teziutlán, Pue. 73800 Teziutlán Centro\n")
             .TextoSegunPaginaDeCodigos(2, "cp850", "Teléfono: 231 176 2907\n\n")
     } else {
-        conector.TextoSegunPaginaDeCodigos(2, "cp850", "Av. Reforma No. 157, Tlatlauquitepec, Pue. 73900 Tlatlauquitepec Centro\n")
+        conector.TextoSegunPaginaDeCodigos(2, "cp850", "Av. Reforma No. 157, Tlatlauquitepec, Pue. 73900\n")
             .TextoSegunPaginaDeCodigos(2, "cp850", "Teléfono: 233 104 1774\n\n")
     }
     conector.EscribirTexto("Atendido por:\n" + barber + "\n")
@@ -152,6 +152,30 @@ export const ImprimirReporte = (total, efectivo, tarjeta, puntosCanjeados, barbe
     conector.Pulso(49, 60, 120)
     conector.imprimirEn("Termica2")
     if (respuesta) {
+    } else {
+        alert("Error: " + respuesta);
+    }
+}
+
+export const abrirCajon = () => {
+    const conector = new ConectorPluginV3()
+    conector.Iniciar()
+    conector.Pulso(49, 60, 120)
+    const respuesta = conector
+        .imprimirEn("Termica2");
+    if (respuesta === true) {
+        console.log("Impreso correctamente");
+    } else {
+        alert("Error: " + respuesta);
+    }
+}
+export const abrirCajon2 = () => {
+    const conector = new ConectorPluginV3()
+    conector.Iniciar()
+    conector.Pulso(49, 60, 120)
+    const respuesta = conector
+    if (respuesta === true) {
+        console.log("Impreso correctamente");
     } else {
         alert("Error: " + respuesta);
     }

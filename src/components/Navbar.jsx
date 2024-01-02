@@ -142,12 +142,12 @@ export const Navbar = ({ logout, funciones, estados, user }) => {
   const setIngreso = () => {
     btnIngreso.click()
     dropdown.click()
-    addMovimiento(conceptoIngreso, cantidadIngreso, user.id, estados.btnCaja)
+    addMovimiento(conceptoIngreso, cantidadIngreso, user.id, estados.btnCaja, 1)
   }
   const setRetiro = () => {
     btnRetiro.click()
     dropdown.click()
-    addMovimiento(conceptoRetiro, -cantidadRetiro, user.id, estados.btnCaja)
+    addMovimiento(conceptoRetiro, -cantidadRetiro, user.id, estados.btnCaja, 2)
   }
 
   return (
