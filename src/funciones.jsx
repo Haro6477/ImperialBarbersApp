@@ -34,31 +34,31 @@ export function showAlertBtn(title, icono, text, foco = '', idCobro, descuento, 
     focusDeny: true, 
   }).then((result) => {
     if (result.isConfirmed) {
-      MostrarDatos(idCobro, descuento, subtotal, listaServicios = [], listaProductos = [], total, pagoEfectivo = 0, pagoTarjeta = 0, pagoPts = 0, cliente, barber, pts)
+      ImprimirTicket(idCobro, descuento, subtotal, listaServicios = [], listaProductos = [], total, pagoEfectivo = 0, pagoTarjeta = 0, pagoPts = 0, cliente, barber, pts)
     } else {
       MySwal.close();
     }
   })
 }
 
-function MostrarDatos(idCobro, descuento, subtotal, listaServicios = [], listaProductos = [], total, pagoEfectivo = 0, pagoTarjeta = 0, pagoPts = 0, cliente, barber, pts) {
-  console.log("idCobro: " + idCobro);
-  console.log("descuento: " + descuento)
-  console.log("subtotal: " + subtotal)
-  console.log("total: " + total)
-  console.log("pagoEfectivo: " + pagoEfectivo);
-  console.log("pagoTarjeta: " + pagoTarjeta);
-  console.log("pagoPts: " + pagoPts);
-  console.log("clientes: " + cliente)
-  console.log("barber: " + barber)
-  console.log("pts: " + pts)
-  listaProductos.forEach(producto => {
-    console.log(producto)
-  })
-  listaServicios.forEach(servicio => {
-    console.log(servicio)
-  })
-}
+// function MostrarDatos(idCobro, descuento, subtotal, listaServicios = [], listaProductos = [], total, pagoEfectivo = 0, pagoTarjeta = 0, pagoPts = 0, cliente, barber, pts) {
+//   console.log("idCobro: " + idCobro);
+//   console.log("descuento: " + descuento)
+//   console.log("subtotal: " + subtotal)
+//   console.log("total: " + total)
+//   console.log("pagoEfectivo: " + pagoEfectivo);
+//   console.log("pagoTarjeta: " + pagoTarjeta);
+//   console.log("pagoPts: " + pagoPts);
+//   console.log("clientes: " + cliente)
+//   console.log("barber: " + barber)
+//   console.log("pts: " + pts)
+//   listaProductos.forEach(producto => {
+//     console.log(producto)
+//   })
+//   listaServicios.forEach(servicio => {
+//     console.log(servicio)
+//   })
+// }
 
 function onfocus(foco) {
   if (foco !== '') {
