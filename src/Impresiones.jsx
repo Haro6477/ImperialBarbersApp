@@ -2,7 +2,7 @@ import React from 'react'
 import { ConectorPluginV3 } from './plugin'
 const municipio = import.meta.env.VITE_MUNICIPIO
 
-export const ImprimirTicket = (idCobro, descuento, subtotal, listaServicios = [], listaProductos = [], total, pagoEfectivo = 0, pagoTarjeta = 0, pagoPts = 0, cliente, barber, pts) => {
+export const ImprimirTicket = (idCobro, descuento, subtotal, listaServicios = [], listaProductos = [], total, pagoEfectivo = 0, pagoTarjeta = 0, pagoPts = 0, cliente, barber, pts, reeimpresion = false) => {
     const date = new Date();
     const yyyy = date.getFullYear();
     let mm = date.getMonth() + 1; // Months start at 0!
@@ -82,8 +82,8 @@ export const ImprimirTicket = (idCobro, descuento, subtotal, listaServicios = []
         .EscribirTexto("________________________________\n")
         .EscribirTexto("________________________________\n\n")
         .TextoSegunPaginaDeCodigos(2, "cp850", "Número del programador:\n231 117 1737")
-        .Pulso(49, 60, 120)
-        .imprimirEn("Termica2");
+        if(!reeimpresion) conector.Pulso(49, 60, 120)
+        conector.imprimirEn("Termica2");
     if (respuesta) {
     } else {
         alert("Error: " + respuesta);

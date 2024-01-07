@@ -34,7 +34,7 @@ export function showAlertBtn(title, icono, text, foco = '', idCobro, descuento, 
     focusDeny: true, 
   }).then((result) => {
     if (result.isConfirmed) {
-      ImprimirTicket(idCobro, descuento, subtotal, listaServicios = [], listaProductos = [], total, pagoEfectivo = 0, pagoTarjeta = 0, pagoPts = 0, cliente, barber, pts)
+      ImprimirTicket(idCobro, descuento, subtotal, listaServicios = [], listaProductos = [], total, pagoEfectivo = 0, pagoTarjeta = 0, pagoPts = 0, cliente, barber, pts, true)
     } else {
       MySwal.close();
     }
