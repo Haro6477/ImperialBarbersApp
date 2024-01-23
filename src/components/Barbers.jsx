@@ -82,7 +82,7 @@ const Barbers = () => {
     })
   }
 
-  const openModal = (op, id, nombre, telefono, correo, fechaInicio, fechaNacimiento, usuario, pass, puesto, estatus, permisos, foto, municipio) => {
+  const openModal = (op, id, nombre, telefono, correo, fechaInicio, fechaNacimiento, usuario, pass, puesto, estatus, permisos, foto, municipioActual) => {
     setId(null)
     setNombre("")
     setTelefono("")
@@ -91,9 +91,9 @@ const Barbers = () => {
     setFechaNacimiento("")
     setUsuario("")
     setPass("")
-    setPuesto("")
-    setEstatus("")
-    setMunicipio("")
+    setPuesto("Administrador")
+    setEstatus("A")
+    setMunicipio(municipio)
     setFoto(null)
     setOperacion(op)
     permisos? setCheckCatalogo(permisos.includes('catalogo')) : setCheckCatalogo(false)
@@ -120,7 +120,7 @@ const Barbers = () => {
       if (puesto) setPuesto(puesto)
       if (estatus) setEstatus(estatus)
       if (foto) setFoto(foto)
-      if (municipio) setMunicipio(municipio)
+      if (municipioActual) setMunicipio(municipioActual)
       if (fechaNacimiento != null) {
         const date = new Date(fechaNacimiento);
         const yyyy = date.getFullYear();
