@@ -2,7 +2,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import Axios from 'axios'
 import getClientes from './components/Clientes'
-import { ImprimirReporte, ImprimirTicket, abrirCajon, abrirCajon2 } from './Impresiones'
+import { ImprimirReporte, ImprimirTicket, abrirCajon } from './Impresiones'
 import { ConectorPluginV3 } from './plugin'
 
 
@@ -29,9 +29,9 @@ export function showAlertBtn(title, icono, text, foco = '', idCobro, descuento, 
     icon: icono,
     showConfirmButton: true,
     confirmButtonText: 'Reeimprimir',
-    showDenyButton: true, 
-    denyButtonText: 'Cerrar', 
-    focusDeny: true, 
+    showDenyButton: true,
+    denyButtonText: 'Cerrar',
+    focusDeny: true,
   }).then((result) => {
     if (result.isConfirmed) {
       ImprimirTicket(idCobro, descuento, subtotal, listaServicios = [], listaProductos = [], total, pagoEfectivo = 0, pagoTarjeta = 0, pagoPts = 0, cliente, barber, pts, true)
@@ -475,7 +475,7 @@ export const getDetallesPro = (idCobro, setDetalles) => {
   })
 }
 
-export const addMovimiento = (concepto, cantidad, idBarber, caja, cajon) => {
+export const addMovimiento = (concepto, cantidad, idBarber, caja, nombreBarber) => {
   Axios.post(`${server}/create-movimiento`, {
     concepto: concepto,
     cantidad: cantidad,
@@ -490,11 +490,7 @@ export const addMovimiento = (concepto, cantidad, idBarber, caja, cajon) => {
     })
   }).finally(() => {
     if (caja) window.location.reload()
-    if(cajon == 1){
-      abrirCajon()
-    }else{
-      abrirCajon2()
-    }
+    abrirCajon(concepto, cantidad, nombreBarber)
     showAlert("Movimiento registrado con éxito", 'success')
   })
 }
