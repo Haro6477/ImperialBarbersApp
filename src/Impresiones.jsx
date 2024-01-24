@@ -22,6 +22,7 @@ export const ImprimirTicket = (idCobro, descuento, subtotal, listaServicios = []
     const conector = new ConectorPluginV3();
     const respuesta = conector
         .Iniciar()
+        if (!reeimpresion) conector.Pulso(49, 60, 120)
         .DeshabilitarElModoDeCaracteresChinos()
         .EstablecerAlineacion(ConectorPluginV3.ALINEACION_CENTRO)
     if (municipio == 1) {
@@ -82,7 +83,6 @@ export const ImprimirTicket = (idCobro, descuento, subtotal, listaServicios = []
         .EscribirTexto("________________________________\n")
         .EscribirTexto("________________________________\n\n")
         .TextoSegunPaginaDeCodigos(2, "cp850", "Número del programador:\n231 117 1737")
-    if (!reeimpresion) conector.Pulso(49, 60, 120)
     conector.imprimirEn("Termica2");
     if (respuesta) {
     } else {
@@ -110,6 +110,7 @@ export const ImprimirReporte = (total, efectivo, tarjeta, puntosCanjeados, barbe
     const conector = new ConectorPluginV3();
     const respuesta = conector
         .Iniciar()
+        .Pulso(49, 60, 120)
         .DeshabilitarElModoDeCaracteresChinos()
         .EstablecerAlineacion(ConectorPluginV3.ALINEACION_CENTRO)
         .EstablecerEnfatizado(true)
@@ -149,7 +150,6 @@ export const ImprimirReporte = (total, efectivo, tarjeta, puntosCanjeados, barbe
         conector.EscribirTexto("________________________________\n")
             .EscribirTexto("$" + totalRetiros + ".00\n")
     }
-    conector.Pulso(49, 60, 120)
     conector.imprimirEn("Termica2")
     if (respuesta) {
     } else {
@@ -197,8 +197,4 @@ export const abrirCajon = (concepto, cantidad, nombreBarber) => {
             .EscribirTexto('\nCantidad: -$' + cantidad + ".00\n\n")
     }
     conector.imprimirEn("Termica2")
-    if (respuesta) {
-    } else {
-        alert("Error: " + respuesta);
-    }
 }
