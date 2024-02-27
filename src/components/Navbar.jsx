@@ -210,7 +210,7 @@ export const Navbar = ({ logout, funciones, estados, user }) => {
           <div className="col-sm-10 col-md-2 d-flex justify-content-end pe-5">
             <ul className="navbar-nav mb-2 mb-lg-0 " >
               <li className="nav-item dropdown" id="profile">
-                <div className="nav-link dropdown-toggle cont-img" href="#" id="navbarDropdown" role="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
+                <div className="nav-link dropdown-toggle cont-img" style={{border: '3px solid ' + empleado.color}} href="#" id="navbarDropdown" role="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
                   <img className="crop" src={foto} alt='user' />
                 </div>
                 <ul className="dropdown-menu dropdown-menu-end dropdown-menu-dark" style={{ width: '300px' }} aria-labelledby="navbarDropdown">

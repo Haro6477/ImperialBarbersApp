@@ -144,7 +144,7 @@ export const Perfil = ({ user = {} }) => {
         <div className="image-upload">
           <form action="src/imagenes/profile" encType='multipart/form-data'>
             <label htmlFor={"file-input" + user.id} >
-              <div className="imagen-circular">
+              <div className="imagen-circular" style={{border: '7px solid ' + empleado.color}}>
                 <img src={urlFoto} className="crop " style={{ maxHeight: '800px' }} alt="Click aquí para subir tu foto" title="Click aquí para subir imagen" />
               </div>
             </label>
