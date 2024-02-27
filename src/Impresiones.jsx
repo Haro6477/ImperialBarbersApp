@@ -22,12 +22,13 @@ export const ImprimirTicket = (idCobro, descuento, subtotal, listaServicios = []
     const conector = new ConectorPluginV3();
     const respuesta = conector
         .Iniciar()
+        if (!reeimpresion) conector.Pulso(49, 60, 120)
         .DeshabilitarElModoDeCaracteresChinos()
         .EstablecerAlineacion(ConectorPluginV3.ALINEACION_CENTRO)
     if (municipio == 1) {
-        conector.CargarImagenLocalEImprimir('C:/Users/TheKingBarber/Pictures/darkLogoImperial.png', 0, 216)
+        conector.CargarImagenLocalEImprimir('C:/Users/alive/Pictures/darkLogoImperial.png', 0, 216)
     } else {
-        conector.CargarImagenLocalEImprimir('C:/Users/imper/Pictures/darkLogoImperial.png', 0, 216)
+        conector.CargarImagenLocalEImprimir('C:/Users/alive/Pictures/darkLogoImperial.png', 0, 216)
     }
     conector.Feed(1)
         .EscribirTexto("IMPERIAL BARBERS\n")
@@ -82,8 +83,7 @@ export const ImprimirTicket = (idCobro, descuento, subtotal, listaServicios = []
         .EscribirTexto("________________________________\n")
         .EscribirTexto("________________________________\n\n")
         .TextoSegunPaginaDeCodigos(2, "cp850", "Número del programador:\n231 117 1737")
-        if(!reeimpresion) conector.Pulso(49, 60, 120)
-        conector.imprimirEn("Termica2");
+    conector.imprimirEn("Termica2");
     if (respuesta) {
     } else {
         alert("Error: " + respuesta);
@@ -110,6 +110,7 @@ export const ImprimirReporte = (total, efectivo, tarjeta, puntosCanjeados, barbe
     const conector = new ConectorPluginV3();
     const respuesta = conector
         .Iniciar()
+        .Pulso(49, 60, 120)
         .DeshabilitarElModoDeCaracteresChinos()
         .EstablecerAlineacion(ConectorPluginV3.ALINEACION_CENTRO)
         .EstablecerEnfatizado(true)
@@ -149,7 +150,6 @@ export const ImprimirReporte = (total, efectivo, tarjeta, puntosCanjeados, barbe
         conector.EscribirTexto("________________________________\n")
             .EscribirTexto("$" + totalRetiros + ".00\n")
     }
-    conector.Pulso(49, 60, 120)
     conector.imprimirEn("Termica2")
     if (respuesta) {
     } else {
@@ -157,26 +157,44 @@ export const ImprimirReporte = (total, efectivo, tarjeta, puntosCanjeados, barbe
     }
 }
 
-export const abrirCajon = () => {
+export const abrirCajon = (concepto, cantidad, nombreBarber) => {
+    const date = new Date()
+    let hh = date.getHours()
+    let min = date.getMinutes()
+    let ss = date.getSeconds()
+    if (hh < 10) hh = '0' + h;
+    if (min < 10) min = '0' + min;
+    if (ss < 10) ss = '0' + ss;
+    const hora = hh + ':' + min + ':' + ss;
+
+    let options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    };
+
     const conector = new ConectorPluginV3()
+
     conector.Iniciar()
     conector.Pulso(49, 60, 120)
-    const respuesta = conector
-        .imprimirEn("Termica2");
-    if (respuesta === true) {
-        console.log("Impreso correctamente");
+        .DeshabilitarElModoDeCaracteresChinos()
+        .EstablecerAlineacion(ConectorPluginV3.ALINEACION_CENTRO)
+        .EstablecerEnfatizado(true)
+        .TextoSegunPaginaDeCodigos(2, "cp850", date.toLocaleDateString('es-MX', options) + "\n" + hora + "\n\n")
+        .EstablecerEnfatizado(false)
+    if (cantidad >= 0) {
+        conector.EscribirTexto("Ingreso realizado por:\n" + nombreBarber + "\n")
+            .EscribirTexto("\n________________________________\n")
+            .EstablecerEnfatizado(true)
+            .TextoSegunPaginaDeCodigos(2, "cp850", '\nConcepto: ' + concepto + "\n\n")
+            .EscribirTexto('\nCantidad: $' + cantidad + ".00\n\n")
     } else {
-        alert("Error: " + respuesta);
+        conector.EscribirTexto("Retiro realizado por:\n" + nombreBarber + "\n")
+            .EscribirTexto("\n________________________________\n")
+            .EstablecerEnfatizado(true)
+            .TextoSegunPaginaDeCodigos(2, "cp850", '\nConcepto: ' + concepto + "\n\n")
+            .EscribirTexto('\nCantidad: -$' + cantidad + ".00\n\n")
     }
-}
-export const abrirCajon2 = () => {
-    const conector = new ConectorPluginV3()
-    conector.Iniciar()
-    conector.Pulso(49, 60, 120)
-    const respuesta = conector
-    if (respuesta === true) {
-        console.log("Impreso correctamente");
-    } else {
-        alert("Error: " + respuesta);
-    }
+    conector.imprimirEn("Termica2")
 }
