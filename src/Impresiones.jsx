@@ -22,14 +22,10 @@ export const ImprimirTicket = (idCobro, descuento, subtotal, listaServicios = []
     const conector = new ConectorPluginV3();
     const respuesta = conector
         .Iniciar()
-        if (!reeimpresion) conector.Pulso(49, 60, 120)
+    if (!reeimpresion) conector.Pulso(49, 60, 120)
         .DeshabilitarElModoDeCaracteresChinos()
         .EstablecerAlineacion(ConectorPluginV3.ALINEACION_CENTRO)
-    if (municipio == 1) {
-        conector.CargarImagenLocalEImprimir('C:/Users/alive/Pictures/darkLogoImperial.png', 0, 216)
-    } else {
-        conector.CargarImagenLocalEImprimir('C:/Users/alive/Pictures/darkLogoImperial.png', 0, 216)
-    }
+        .DescargarImagenDeInternetEImprimir('http://localhost:5173/darkLogoImperial.png', 0, 216)
     conector.Feed(1)
         .EscribirTexto("IMPERIAL BARBERS\n")
     if (municipio == 1) {
