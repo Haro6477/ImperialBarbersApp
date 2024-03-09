@@ -83,7 +83,7 @@ const Horarios = () => {
             {empleados.map((empleado) => (
               (empleado.estatus == "B" || empleado.estatus == "P") ? null
                 : <tr onClick={() => openModal(empleado.id, empleado.nombre)} className='pointer' data-bs-toggle='modal' data-bs-target='#modal-horarios' key={empleado.id}>
-                  <th className='text-start'>{empleado.nombre.substring(0, empleado.nombre.indexOf(' '))}</th>
+                  <th className='text-start'>{empleado.nombre}</th>
                   <td>{horarios.length > 0 ? horarios.find((horario) => horario.idBarber == empleado.id).lunIn == '00:00:00' ? <span className='text-danger'>DESCANSO</span> : horarios.find((horario) => horario.idBarber == empleado.id).lunIn.substring(0, 5) + ' - ' + horarios.find((horario) => horario.idBarber == empleado.id).lunOut.substring(0, 5) : ''}</td>
                   <td>{horarios.length > 0 ? horarios.find((horario) => horario.idBarber == empleado.id).marIn == '00:00:00' ? <span className='text-danger'>DESCANSO</span> : horarios.find((horario) => horario.idBarber == empleado.id).marIn.substring(0, 5) + ' - ' + horarios.find((horario) => horario.idBarber == empleado.id).marOut.substring(0, 5) : ''}</td>
                   <td>{horarios.length > 0 ? horarios.find((horario) => horario.idBarber == empleado.id).mieIn == '00:00:00' ? <span className='text-danger'>DESCANSO</span> : horarios.find((horario) => horario.idBarber == empleado.id).mieIn.substring(0, 5) + ' - ' + horarios.find((horario) => horario.idBarber == empleado.id).mieOut.substring(0, 5) : ''}</td>
