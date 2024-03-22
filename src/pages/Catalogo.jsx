@@ -1,23 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { showAlert, addProducto, updateProducto, addServicio, updateServicio } from '../funciones'
 import '../estilos/forms.css'
-import { BarraBusqueda2 } from './BarraBusqueda2'
+import { BarraBusqueda2 } from '../components/BarraBusqueda2'
 import Swal from 'sweetalert2'
 
 
-const Catalogo = () => {
+const Catalogo = ({ productos, setProductos, servicios, setServicios }) => {
   // const server = 'http://localhost'
   const server = import.meta.env.VITE_SERVER
   const municipio = import.meta.env.VITE_MUNICIPIO
 
-  const [productos, setProductos] = useState([])
-  const [servicios, setServicios] = useState([])
-
   const [productosMostrados, setProductosMostrados] = useState([])
   const [serviciosMostrados, setServiciosMostrados] = useState([])
 
-  const [loadingProductos, setLoadingPro] = useState(true)
-  const [loadingServicios, setLoadingServ] = useState(true)
   const [operacion, setOperacion] = useState(1)
   const [title, setTitle] = useState("")
 
@@ -40,24 +35,9 @@ const Catalogo = () => {
 
 
   useEffect(() => {
-    getProductos();
-    getServicios();
-  }, [])
-
-  const getProductos = () => {
-    setLoadingPro(true)
-    axios.get(`${server}/productos/${municipio}`).then((response) => {
-      setProductos(response.data);
-      setProductosMostrados(response.data)
-    }).finally(setLoadingPro(false))
-  }
-
-  const getServicios = () => {
-    axios.get(`${server}/servicios/${municipio}`).then((response) => {
-      setServicios(response.data);
-      setServiciosMostrados(response.data)
-    }).finally(setLoadingServ(false))
-  }
+    setProductosMostrados(productos)
+    setServiciosMostrados(servicios)
+  }, [productos, servicios])
 
 
   const openModalProductos = (op, id, nombre, marca, linea, contenido, enVenta, suministros, almacen, descripcion, costo, precio, pts, imagen) => {
@@ -118,12 +98,12 @@ const Catalogo = () => {
     setOperacion(op)
 
     if (op === 1) {
-      btnEliminarServicio.className="d-none"
+      btnEliminarServicio.className = "d-none"
       document.getElementById('btnAceptarS').className = "btn btn-success"
       setTitle('Registrar nuevo servicio')
       document.getElementById('lblTitleS').className = "h4 text-success"
     } else if (op === 2) {
-      btnEliminarServicio.className="btn btn-danger me-3 my-3"
+      btnEliminarServicio.className = "btn btn-danger me-3 my-3"
       document.getElementById('btnAceptarS').className = "btn btn-warning"
       setTitle('Editar datos del servicio')
       document.getElementById('lblTitleS').className = "h4 text-warning"
@@ -145,9 +125,9 @@ const Catalogo = () => {
       showAlert('Escribe el nombre', 'warning')
     } else {
       if (operacion === 1) {
-        addProducto(nombre, marca, linea, contenido, enVenta, suministros, almacen, descripcion, costo, precio, pts, municipio, getProductos)
+        addProducto(nombre, marca, linea, contenido, enVenta, suministros, almacen, descripcion, costo, precio, pts, municipio, productos, setProductos)
       } else {
-        updateProducto(nombre, marca, linea, contenido, enVenta, suministros, almacen, descripcion, costo, precio, pts, id, getProductos)
+        updateProducto(nombre, marca, linea, contenido, enVenta, suministros, almacen, descripcion, costo, precio, pts, id, productos, setProductos)
       }
       document.getElementById('btnCerrarModal').click()
     }
@@ -158,9 +138,9 @@ const Catalogo = () => {
       showAlert('Escribe el nombre', 'warning')
     } else {
       if (operacion === 1) {
-        addServicio(nombre, descripcion, precio, pts, municipio, getServicios)
+        addServicio(nombre, descripcion, precio, pts, municipio, servicios, setServicios)
       } else {
-        updateServicio(nombre, descripcion, precio, pts, id, getServicios)
+        updateServicio(nombre, descripcion, precio, pts, id, servicios, setServicios)
       }
       document.getElementById('btnCerrarModalS').click()
     }
@@ -238,7 +218,7 @@ const Catalogo = () => {
                   <td className='text-start'>{producto.nombre + ' ' + producto.marca + ' ' + producto.linea}</td>
                   <td>{producto.contenido}</td>
                   <td>{producto.precio}</td>
-                  <td>{+producto.almacen + +producto.enVenta == 0 ? '-' : +producto.almacen + +producto.enVenta}</td>
+                  <td className={+producto.almacen + +producto.enVenta == 0 ? 'text-secondary' : ''}>{+producto.almacen + +producto.enVenta == 0 ? '--' : +producto.almacen + +producto.enVenta}</td>
                 </tr>
               ))}
             </tbody>

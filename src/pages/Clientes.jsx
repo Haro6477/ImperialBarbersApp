@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import Swal from 'sweetalert2'
-import { showAlert, addCliente, updateCliente } from '../funciones'
-import { BarraBusqueda2 } from './BarraBusqueda2'
+import { showAlert, addCliente, updateCliente, formatearFecha2 } from '../funciones'
+import { BarraBusqueda2 } from '../components/BarraBusqueda2'
 
-export const Clientes = () => {
-  // const server = 'http://localhost'
+export const Clientes = ({ clientes, setClientes }) => {
   const server = import.meta.env.VITE_SERVER
   const municipio = import.meta.env.VITE_MUNICIPIO
 
-  const [clientes, setClientes] = useState([])
   const [clientesMostrados, setClientesMostrados] = useState([])
   const [id, setId] = useState("")
   const [nombre, setNombre] = useState("")
@@ -23,19 +21,16 @@ export const Clientes = () => {
   const [title, setTitle] = useState("")
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    getClientes();
-  }, [])
-
-  const getClientes = () => {
-    axios.get(`${server}/clientes`).then((response) => {
-      setClientes(response.data);
-      setClientesMostrados(response.data)
-    }).finally(() => setLoading(false))
-  }
-
   const checkHombre = document.getElementById('checkH')
   const checkMujer = document.getElementById('checkM')
+
+  useEffect(() => {
+    setClientesMostrados(clientes)
+  }, [clientes])
+
+  useEffect(() => {
+    setLoading(false)
+  }, [clientesMostrados])
 
   const openModal = (op, id, nombre, telefono, fechaNacimiento, genero, pts) => {
     setId(null)
@@ -86,9 +81,9 @@ export const Clientes = () => {
       showAlert('Escribe el nombre del cliente', 'warning')
     } else {
       if (operacion === 1) {
-        addCliente(nombre, telefono, pts, genero, fechaNacimiento, codigoQR, municipio, getClientes)
+        addCliente(nombre, telefono, pts, genero, fechaNacimiento, codigoQR, municipio, clientes, setClientes)
       } else {
-        updateCliente(nombre, telefono, pts, genero, fechaNacimiento, codigoQR, municipio, id, getClientes)
+        updateCliente(nombre, telefono, pts, genero, fechaNacimiento, codigoQR, municipio, id, clientes, setClientes)
       }
       document.getElementById('btnCerrarModal').click()
     }
@@ -105,7 +100,11 @@ export const Clientes = () => {
         axios.delete(instruccion).then(() => {
           showAlert("Cliente eliminado", 'success')
         }).finally(() => {
-          getClientes();
+          const indiceCliente = clientes.findIndex((cliente) => cliente.id === id);
+          if (indiceCliente !== -1) {
+            clientes.splice(indiceCliente, 1);
+            setClientes([...clientes]);
+          }
         })
       } else {
         showAlert("No se eliminó ningún dato", "info")
@@ -124,13 +123,7 @@ export const Clientes = () => {
           <div className="col-md-4">
 
           </div>
-          <div className="col-md-4">
-            <div className="d-grid mx-auto">
-              <button onClick={() => openModal(1)} className='btn btn-dark' data-bs-toggle='modal' data-bs-target='#modalClientes'>
-                <i className="fa-solid fa-circle-plus"></i> Añadir
-              </button>
-            </div>
-          </div>
+          
           <div className="col-md-4">
             <h6>Clientes registrados: {clientes.length}</h6>
           </div>
@@ -151,14 +144,13 @@ export const Clientes = () => {
                 </thead>
                 <tbody className='table-group-divider'>
                   {clientesMostrados.map((cliente, i) => (
-                    !cliente.hidden &&
-                    <tr key={cliente.id}>
+                      <tr key={cliente.id}>
                       <td className='text-start'>{cliente.nombre}</td>
                       <td>{cliente.telefono}</td>
                       <td>{cliente.pts}</td>
                       {(new Date(new Date().getFullYear(), new Date(cliente.fechaNacimiento).getMonth(), new Date(cliente.fechaNacimiento).getDate()) > new Date(Date.now() - 432000000) && new Date(new Date().getFullYear(), new Date(cliente.fechaNacimiento).getMonth(), new Date(cliente.fechaNacimiento).getDate()) < new Date(Date.now() + 432000000))
-                      ? <td style={{ background: 'linear-gradient(indigo, blue)', color: 'white', borderRadius:'.75em' }}>{new Date(cliente.fechaNacimiento).toLocaleDateString('es-MX', { day: 'numeric', month: 'long' })}</td>
-                      : <td>{new Date(cliente.fechaNacimiento).toLocaleDateString('es-MX', { day: 'numeric', month: 'long' })}</td>}
+                        ? <td style={{ background: 'linear-gradient(indigo, blue)', color: 'white', borderRadius: '.75em' }}>{new Date(cliente.fechaNacimiento).toLocaleDateString('es-MX', { day: 'numeric', month: 'long' })}</td>
+                        : <td>{new Date(cliente.fechaNacimiento).toLocaleDateString('es-MX', { day: 'numeric', month: 'long' })}</td>}
                       {/* <td>${new Intl.NumberFormat('es-mx').format(producto.precio)}</td> */}
                       <td>{cliente.municipio == 1 ? "Teziutlán" : "Tlatlauqui"}</td>
                       <td>

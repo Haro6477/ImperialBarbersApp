@@ -1,7 +1,7 @@
 import { ButtonOutline } from "./ButtonOutline"
 import { ButtonPlus } from "./ButtonPlus"
 import React, { useState, useEffect } from 'react'
-import './navbar.css'
+import '../estilos/navbar.css'
 import { useNavigate } from "react-router-dom"
 import { ButtonPill } from "./ButtonPill"
 import { ButtonPlusActive } from "./ButtonPlusActive"
@@ -9,7 +9,7 @@ import { showAlert, addCliente, addMovimiento, getEmpleado, iniciarDescanso, fin
 import axios from "axios"
 
 
-export const Navbar = ({ logout, funciones, estados, user }) => {
+export const Navbar = ({ logout, funciones, estados, user, clientes, setClientes, movimientos, setMovimientos, getCaja}) => {
   const server = import.meta.env.VITE_SERVER
   const municipio = import.meta.env.VITE_MUNICIPIO
 
@@ -76,7 +76,7 @@ export const Navbar = ({ logout, funciones, estados, user }) => {
       .then(res => res.json())
       .then(res => setFoto(server + '/' + res))
       .catch(err => {
-        alert.error(err)
+        console.log(err)
       })
   }
 
@@ -134,7 +134,7 @@ export const Navbar = ({ logout, funciones, estados, user }) => {
     if (nombreCliente.trim() == '') {
       showAlert('Escribe el nombre del cliente', 'warning')
     } else {
-      addCliente(nombreCliente, telefonoCliente, pts, genero, fechaNacimientoCliente, codigoQR, municipio)
+      addCliente(nombreCliente, telefonoCliente, pts, genero, fechaNacimientoCliente, codigoQR, municipio, clientes, setClientes)
       document.getElementById('btnCerrar').click()
     }
   }
@@ -142,12 +142,12 @@ export const Navbar = ({ logout, funciones, estados, user }) => {
   const setIngreso = () => {
     btnIngreso.click()
     dropdown.click()
-    addMovimiento(conceptoIngreso, cantidadIngreso, user.id, estados.btnCaja, empleado.nombre)
+    addMovimiento(conceptoIngreso, cantidadIngreso, user.id, empleado.nombre, movimientos, setMovimientos, getCaja)
   }
   const setRetiro = () => {
     btnRetiro.click()
     dropdown.click()
-    addMovimiento(conceptoRetiro, -cantidadRetiro, user.id, estados.btnCaja, empleado.nombre)
+    addMovimiento(conceptoRetiro, -cantidadRetiro, user.id, empleado.nombre, movimientos, setMovimientos, getCaja)
   }
 
   return (
@@ -211,7 +211,7 @@ export const Navbar = ({ logout, funciones, estados, user }) => {
             <ul className="navbar-nav mb-2 mb-lg-0 " >
               <li className="nav-item dropdown" id="profile">
                 <div className="nav-link dropdown-toggle cont-img" style={{border: '3px solid ' + empleado.color}} href="#" id="navbarDropdown" role="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
-                  <img className="crop" src={foto} alt='user' />
+                  <img className="crop" src={foto} alt='user'/>
                 </div>
                 <ul className="dropdown-menu dropdown-menu-end dropdown-menu-dark" style={{ width: '300px' }} aria-labelledby="navbarDropdown">
                   <li><button onClick={() => { setBtn(funciones.setBtnPerfil); dropdown.click() }} className="dropdown-item" >{empleado.nombre}</button></li>

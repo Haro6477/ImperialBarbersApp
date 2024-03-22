@@ -2,26 +2,22 @@ import React, { useCallback, useEffect, useState } from 'react'
 import '../estilos/forms.css'
 import { addCobro, showAlert } from '../funciones'
 import { ImprimirTicket } from '../Impresiones'
-import { BarraBusqueda } from './BarraBusqueda'
-import { FilaTablaVenta } from './filaTablaVenta'
+import { BarraBusqueda } from '../components/BarraBusqueda'
+import { FilaTablaVenta } from '../components/filaTablaVenta'
 
-const Venta = ({ user }) => {
+const Venta = ({ user, clientes, setClientes, empleados, productos, servicios, getCaja, setProductos }) => {
   // const server = 'http://localhost'
   const server = import.meta.env.VITE_SERVER
   const municipio = import.meta.env.VITE_MUNICIPIO
 
-  const [productos, setProductos] = useState([])
-  const [servicios, setServicios] = useState([])
-  const [clientes, setClientes] = useState([])
-  const [empleados, setEmpleados] = useState([])
+  const [empleadosActivos, setEmpleadosAtivos] = useState([])
   const [empleado, setEmpleado] = useState({})
-  const [loading, setLoading] = useState(true)
   const [cumple, setCumple] = useState(false)
 
   const [txtCliente, setTxtCliente] = useState("")
   const [txtProServ, setTxtProServ] = useState("")
 
-  const [cliente, setCliente] = useState({})
+  const [cliente, setCliente] = useState(null)
   const [itemLista, setItem] = useState({})
   const [listaProductos, setListaProductos] = useState([])
   const [listaServicios, setListaServicios] = useState([])
@@ -29,7 +25,6 @@ const Venta = ({ user }) => {
   const [subtotal, setSubtotal] = useState(0)
   const [ptsAcumulados, setPtsAcumulados] = useState(0)
   const [metodoPago, setMetodoPago] = useState('e')
-  const [idBarber, setIdBarber] = useState(user.id)
   const [divider, setDivider] = useState(false)
   const [descuento, setDescuento] = useState(0)
   const [conDescuento, setConDescuento] = useState(false)
@@ -43,54 +38,20 @@ const Venta = ({ user }) => {
   const dropClientes = document.getElementById("drop1")
   const inputProServ = document.getElementById('input2')
   const dropProServ = document.getElementById("drop2")
-  const spanPts = document.getElementById('spanPts')
   const btnDividir = document.getElementById('btnDividir')
 
   const classInputNone = 'd-none'
   const classInputBlock = 'w-100 d-block form-select text-secondary'
 
   useEffect(() => {
-    getClientes();
-    getProductos();
-    getServicios();
-    getEmpleados()
+    getEmpleadosActivos()
   }, [])
 
-  const getEmpleados = () => {
-    axios.get(`${server}/empleados/${municipio}`).then((response) => {
-      const empleadosMunicipio = (response.data)
-      const empleadosActivos = empleadosMunicipio.filter(empleado => empleado.estatus == "A");
-      setEmpleados(empleadosActivos);
-      setEmpleado(empleadosActivos[0])
-    })
-  }
-
-  const getClientes = () => {
-    setLoading(true)
-    axios.get(`${server}/clientes`).then((response) => {
-      setClientes(response.data);
-    }).finally(setLoading(false))
-  }
-
-  const getProductos = () => {
-    setLoading(true)
-    axios.get(`${server}/productos/${municipio}`).then((response) => {
-      setProductos(response.data);
-    }).finally(setLoading(false))
-  }
-
-  const getServicios = () => {
-    setLoading(true)
-    axios.get(`${server}/servicios/${municipio}`).then((response) => {
-      setServicios(response.data);
-    }).finally(setLoading(false))
-  }
-
-  const dropdownProServ = (valor) => {
-    setTxtProServ(valor)
-    inputProServ.value == ""
-      ? dropProServ.className = classInputNone
-      : dropProServ.className = classInputBlock
+  const getEmpleadosActivos = () => {
+    let empleadosActivos = empleados.filter(empleado => empleado.estatus == "A");
+    empleadosActivos = empleadosActivos.filter(empleado => empleado.municipio == municipio);
+    setEmpleadosAtivos(empleadosActivos);
+    setEmpleado(empleadosActivos[0])
   }
 
   const obtenerEmpleado = (id) => {
@@ -117,15 +78,13 @@ const Venta = ({ user }) => {
     if (inputProServ.value == "" || Object.keys(itemLista).length === 0) { return }
     dropClientes.className = classInputNone
     dropProServ.className = classInputNone
-    
+
     const itemConCantidad = {
       ...itemLista,
       cantidad: cantidad
     };
     inputProServ.value = ""
     itemLista.tipo === 'p' ? setListaProductos(listaProductos.concat(itemConCantidad)) : setListaServicios(listaServicios.concat(itemConCantidad))
-    // setSubtotal(subtotal + itemLista.precio * cantidad)
-    // setPtsAcumulados(ptsAcumulados + itemLista.pts * cantidad)
     setItem({})
     setCantidad(1)
     if (listaProductos.length + listaServicios.length >= 1) {
@@ -137,14 +96,14 @@ const Venta = ({ user }) => {
   const nuevoCobro = (() => {
     switch (metodoPago) {
       case 'e':
-        addCobro(cliente.nombre, empleado.nombre, cliente.pts, +descuento / 100 * +subtotal, subtotal, divider, getClientes, cliente.id, subtotal - descuento / 100 * subtotal, ptsAcumulados - descuento / 100 * ptsAcumulados, metodoPago, empleado.id, user.id, subtotal - +descuento / 100 * +subtotal, 0, 0, listaProductos, listaServicios)
+        addCobro(cliente.nombre, empleado.nombre, cliente.pts, +descuento / 100 * +subtotal, subtotal, divider, clientes, setClientes, cliente.id, subtotal - descuento / 100 * subtotal, ptsAcumulados - descuento / 100 * ptsAcumulados, metodoPago, empleado.id, user.id, subtotal - +descuento / 100 * +subtotal, 0, 0, listaProductos, listaServicios, getCaja, productos, setProductos)
         break;
       case 't':
-        addCobro(cliente.nombre, empleado.nombre, cliente.pts, +descuento / 100 * +subtotal, subtotal, divider, getClientes, cliente.id, subtotal - descuento / 100 * subtotal, ptsAcumulados - descuento / 100 * ptsAcumulados, metodoPago, empleado.id, user.id, 0, subtotal - +descuento / 100 * +subtotal, 0, listaProductos, listaServicios)
+        addCobro(cliente.nombre, empleado.nombre, cliente.pts, +descuento / 100 * +subtotal, subtotal, divider, clientes, setClientes, cliente.id, subtotal - descuento / 100 * subtotal, ptsAcumulados - descuento / 100 * ptsAcumulados, metodoPago, empleado.id, user.id, 0, subtotal - +descuento / 100 * +subtotal, 0, listaProductos, listaServicios, getCaja, productos, setProductos)
         break;
       case 'p':
         if (cliente.pts / 2 >= subtotal) {
-          addCobro(cliente.nombre, empleado.nombre, cliente.pts, +descuento / 100 * +subtotal, subtotal, divider, getClientes, cliente.id, subtotal - descuento / 100 * subtotal, - pts, metodoPago, empleado.id, user.id, 0, 0, subtotal * 2 - +descuento / 100 * +subtotal, listaProductos, listaServicios)
+          addCobro(cliente.nombre, empleado.nombre, cliente.pts, +descuento / 100 * +subtotal, subtotal, divider, clientes, setClientes, cliente.id, subtotal - descuento / 100 * subtotal, - pts, metodoPago, empleado.id, user.id, 0, 0, subtotal * 2 - +descuento / 100 * +subtotal, listaProductos, listaServicios, getCaja, productos, setProductos)
         } else {
           showAlert("Puntos insuficientes", 'error')
           return
@@ -152,7 +111,7 @@ const Venta = ({ user }) => {
         break;
       default:
         if (cliente.pts >= pts) {
-          addCobro(cliente.nombre, empleado.nombre, cliente.pts, +descuento / 100 * +subtotal, subtotal, divider, getClientes, cliente.id, subtotal - descuento / 100 * subtotal, ptsAcumulados - pts * 1.05 - descuento / 100 * ptsAcumulados, metodoPago, empleado.id, user.id, efectivo, tarjeta, pts, listaProductos, listaServicios)
+          addCobro(cliente.nombre, empleado.nombre, cliente.pts, +descuento / 100 * +subtotal, subtotal, divider, clientes, setClientes, cliente.id, subtotal - descuento / 100 * subtotal, ptsAcumulados - pts * 1.05 - descuento / 100 * ptsAcumulados, metodoPago, empleado.id, user.id, efectivo, tarjeta, pts, listaProductos, listaServicios, getCaja, productos, setProductos)
         } else {
           showAlert("Puntos insuficientes", 'error')
           return
@@ -163,6 +122,7 @@ const Venta = ({ user }) => {
   })
 
   const reset = () => {
+    setCliente(null)
     inputCliente.value = ''
     inputProServ.value = ''
     setListaProductos([])
@@ -170,17 +130,14 @@ const Venta = ({ user }) => {
     setSubtotal(0)
     setPtsAcumulados(0)
     inputCliente.focus()
-    spanPts.innerText = ''
     document.getElementById('flexRadioDefault1').checked = true
     setMetodoPago('e')
     setEfectivo(0)
     setTarjeta(0)
     setPts(0)
     setDescuento(0)
-    // btnDividir.className = 'btn btn-danger'
-    // btnDividir.innerText = 'Dividir'
     setDivider(false)
-    
+
     conDescuento && document.getElementById('btnDescuento').click()
   }
 
@@ -206,7 +163,7 @@ const Venta = ({ user }) => {
           </div>
         </div>
         <div className="col-sm-8 col-md-2 mb-3 pt-1">
-          {Object.keys(cliente).length > 0 && <span className={cumple ? 'h4 cumple text-info' : 'h4 text-info'} id='spanPts'>{cliente.pts} pts.</span>}
+          {cliente && <span className={cumple ? 'h4 cumple text-info' : 'h4 text-info'}>{cliente.pts} pts.</span>}
         </div>
       </div>
 
@@ -235,7 +192,7 @@ const Venta = ({ user }) => {
         <table className="table table-borderless align-middle">
           <thead className='table-dark align-middle'>
             <tr>
-              <th className='text-start ps-5' style={{maxWidth:'10rem'}}>Cantidad</th>
+              <th className='text-start ps-5' style={{ maxWidth: '10rem' }}>Cantidad</th>
               <th className='text-start'>Servicio o Producto</th>
               <th>Precio c/u</th>
               <th>Subtotal</th>
@@ -244,10 +201,10 @@ const Venta = ({ user }) => {
           </thead>
           <tbody>
             {listaServicios.map((servicio, i) => (
-              <FilaTablaVenta key={i} divider={divider} item={servicio} listaItems={listaServicios} setLista={setListaServicios} empleados={empleados} index={i}></FilaTablaVenta>
+              <FilaTablaVenta key={i} divider={divider} item={servicio} listaItems={listaServicios} setLista={setListaServicios} empleados={empleadosActivos} index={i}></FilaTablaVenta>
             ))}
             {listaProductos.map((producto, i) => (
-              <FilaTablaVenta key={i} divider={divider} item={producto} listaItems={listaProductos} setLista={setListaProductos} empleados={empleados} index={i}></FilaTablaVenta>
+              <FilaTablaVenta key={i} divider={divider} item={producto} listaItems={listaProductos} setLista={setListaProductos} empleados={empleadosActivos} index={i}></FilaTablaVenta>
             ))}
           </tbody>
           <tfoot className='table-secondary h5'>
@@ -360,7 +317,7 @@ const Venta = ({ user }) => {
                   <select value={empleado.id} className='form-select' name="select-empleado" id="select-empleado"
                     onChange={(e) => { obtenerEmpleado(e.target.value) }}>
                     <option disabled>Empleado que realizó el servicio</option>
-                    {empleados.map((empleado) => (
+                    {empleadosActivos.map((empleado) => (
                       <option className='' style={{ backgroundColor: empleado.color, color: (empleado.color ? '#ffffff' : '#000000') }} key={empleado.id} value={empleado.id} >{empleado.nombre}</option>
                     ))}
                   </select>

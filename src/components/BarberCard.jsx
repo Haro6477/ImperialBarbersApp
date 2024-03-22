@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import './barberCard.css'
+import '../estilos/barberCard.css'
 import { crearHorario, showAlert, updateFotoEmpleado } from '../funciones'
 
-export const BarberCard = ({ children, empleado, image, setFotoActualizada }) => {
+export const BarberCard = ({ children, empleado, image, getFotos }) => {
   const [urlFoto, setUrlFoto] = useState("/src/images/barber-profile.webp")
   const [imagen, setImagen] = useState(null)
 
@@ -33,6 +33,7 @@ export const BarberCard = ({ children, empleado, image, setFotoActualizada }) =>
       body: formdata
     })
       .then(res => res.text())
+      .then(() => getFotos())
       .then(res => showAlert(res, 'success'))
       .catch(err => {
         console.error(err)

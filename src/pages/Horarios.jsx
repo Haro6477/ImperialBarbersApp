@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { getChequeos, getChequeosHoy, getEmpleados, guardarHorario } from '../funciones'
 
-const Horarios = () => {
-  const [empleados, setEmpleados] = useState([])
+const Horarios = ({empleados}) => {
   const [horarios, setHorarios] = useState([])
 
   const [idBarber, setIdBarber] = useState('')
@@ -26,13 +25,8 @@ const Horarios = () => {
   const [chequeos, setChequeos] = useState([])
 
   useEffect(() => {
-    obtenerEmpleados()
     obtenerChequeosHoy()
   }, [])
-
-  const obtenerEmpleados = () => {
-    getEmpleados(setEmpleados, setHorarios)
-  }
 
   const obtenerChequeosHoy = () => {
     getChequeosHoy(setChequeosHoy)
@@ -154,7 +148,7 @@ const Horarios = () => {
           </table>
         </div>
         : <button onClick={() => obtenerChequeos()}
-          className='btn btn-dark mb-5'>Mostrar todo
+          className='btn btn-dark mb-5'>Mostrar 50 más
         </button>
       }
 

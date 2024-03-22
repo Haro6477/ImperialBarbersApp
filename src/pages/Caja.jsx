@@ -1,21 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { addReporte, capitalize, getDetallesPro, getDetallesServ, getEmpleado } from '../funciones'
 import { ImprimirReporte } from '../Impresiones'
-import Axios from 'axios'
+import axios from 'axios'
 
-const Caja = ({ user }) => {
+const Caja = ({ user, cobros, setCobros, movimientos, reporte, setReporte, caja, getCaja }) => {
   // const server = 'http://localhost'
   const server = import.meta.env.VITE_SERVER
   const municipio = import.meta.env.VITE_MUNICIPIO
 
-  const [efectivo, setEfectivo] = useState(0)
-  const [dineroElectronico, setDineroElectronico] = useState(0)
-  const [pts, setPts] = useState(0)
   const [cobrosHoy, setCobrosHoy] = useState([])
-  const [loadingCaja, setLoadingCaja] = useState(true)
   const [loadingCobros, setLoadingCobros] = useState(true)
   const [loadingHistorial, setLoadingHistorial] = useState(false)
-  const [loadingMovimientos, setLoadingMovimientos] = useState(true)
   const [idCobro, setIdCobro] = useState("")
   const [cliente, setCliente] = useState("")
   const [totalCobro, setTotalCobro] = useState("")
@@ -32,41 +27,23 @@ const Caja = ({ user }) => {
   const [historial, setHistorial] = useState(false)
   const [detallesServicio, setDetallesServ] = useState([])
   const [detallesProducto, setDetallesPro] = useState([])
-  const [movimientos, setMovimientos] = useState([])
   const [empleado, setEmpleado] = useState({})
 
   let imageRandom = `/src/images/random${(Math.trunc(Math.random() * 5) + 1)}.png`
   const tableDiv = document.getElementById('tableDiv')
-  let cobros = []
   const tbody = document.getElementById('tbody')
   const opciones = { weekday: 'long', month: 'long', day: 'numeric' }
 
   useEffect(() => {
-    getCaja();
     getCrobrosHoy()
-    getMovimientosHoy()
     getEmpleado(user.id, setEmpleado)
   }, [])
 
-  const getCaja = () => {
-    axios.get(`${server}/caja/${municipio}`).then((response) => {
-      setEfectivo(response.data[0].efectivo);
-      setDineroElectronico(response.data[0].dineroElectronico);
-      setPts(response.data[0].puntos)
-    }).finally(() => setLoadingCaja(false))
-  }
 
   const getCrobrosHoy = () => {
     axios.get(`${server}/cobros-hoy/${municipio}`).then((response) => {
       setCobrosHoy(response.data);
     }).finally(() => setLoadingCobros(false))
-  }
-
-  const getMovimientosHoy = () => {
-    setLoadingMovimientos(true)
-    axios.get(`${server}/movimientos-hoy/${municipio}`).then((response) => {
-      setMovimientos(response.data)
-    }).finally(() => setLoadingMovimientos(false))
   }
 
   const openModal = (id, cliente, total, subtotal, descuento, totalPuntos, metodoPago, barber, cobrador, fecha, pagoEfectivo, pagoTarjeta, pagoPuntos) => {
@@ -77,7 +54,7 @@ const Caja = ({ user }) => {
     setDescuento(descuento)
     setTotalPuntos(totalPuntos)
     setMetodoPago(metodoPago)
-    setBarber(barber ? barber : "Equipo")
+    setBarber(barber ? barber : "Equipo Imperial")
     setCobrador(cobrador)
     setFecha(fecha)
     setPagoEfectivo(pagoEfectivo)
@@ -107,66 +84,64 @@ const Caja = ({ user }) => {
     setHistorial(true)
     setLoadingHistorial(true)
     tableDiv.className = 'rounded py-1 px-1 shadow-sm bg-light border mb-5 d-block'
-    Axios.get(`${server}/cobros/${municipio}`).then((response) => {
-      cobros = response.data
-    }).then(() => {
-      let fechaIndex = new Date(2022, 1, 1)
-      cobros.forEach(cobro => {
-        if (new Date(cobro.fecha).toDateString() != new Date().toDateString()) {
-          if (new Date(cobro.fecha).toLocaleDateString('es-mx') != new Date(fechaIndex).toLocaleDateString('es-mx')) {
-            fechaIndex = cobro.fecha
-            const trFecha = document.createElement('tr')
-            const tdFecha = document.createElement('td')
-            tdFecha.colSpan = 4
-            tdFecha.innerHTML = '<strong>' + capitalize(new Date(cobro.fecha).toLocaleDateString('es-mx', opciones)) + '</strong>'
-            trFecha.appendChild(tdFecha)
-            trFecha.className = 'table-primary'
-            tbody.appendChild(trFecha)
-          }
-          if (cobro.cliente != "Cliente De Pruebas") {
-            const tr = document.createElement('tr')
-            const tdCliente = document.createElement('td')
-            const tdBarber = document.createElement('td')
-            const tdMetodo = document.createElement('td')
-            const span = document.createElement('span')
-            const tdTotal = document.createElement('td')
-            tdCliente.innerText = cobro.cliente
-            tdCliente.className = 'text-start'
-            tdBarber.innerText = cobro.barber ? cobro.barber : 'Trabajo en equipo'
-            tdBarber.className = 'text-start'
-            tdTotal.innerText = '$ ' + cobro.total
-            switch (cobro.metodoPago) {
-              case 'e':
-                span.innerText = 'Efectivo'
-                span.className = 'badge bg-success'
-                break;
-              case 't':
-                span.innerText = 'Tarjeta'
-                span.className = 'badge bg-info'
-                break;
-              case 'p':
-                span.innerText = 'Puntos'
-                span.className = 'badge bg-danger'
-                break;
-              default:
-                span.innerText = 'Mixto'
-                span.className = 'badge bg-warning'
-                break;
-            }
-            tdMetodo.appendChild(span)
-            tr.appendChild(tdCliente)
-            tr.appendChild(tdBarber)
-            tr.appendChild(tdMetodo)
-            tr.appendChild(tdTotal)
-            tr.className = 'pointer'
-            tr.setAttribute('data-bs-toggle', 'modal')
-            tr.setAttribute('data-bs-target', '#modal-cobros')
-            tr.addEventListener('click', () => openModal(cobro.id, cobro.cliente, cobro.total, cobro.subtotal, cobro.descuento, cobro.totalPuntos, cobro.metodoPago, cobro.barber, cobro.cobrador, cobro.fecha, cobro.pagoEfectivo, cobro.pagoTarjeta, cobro.pagoPuntos))
-            tbody.appendChild(tr)
-          }
+
+    let fechaIndex = new Date(2022, 1, 1)
+    cobros.forEach(cobro => {
+      if (new Date(cobro.fecha).toDateString() != new Date().toDateString()) {
+        if (new Date(cobro.fecha).toLocaleDateString('es-mx') != new Date(fechaIndex).toLocaleDateString('es-mx')) {
+          fechaIndex = cobro.fecha
+          const trFecha = document.createElement('tr')
+          const tdFecha = document.createElement('td')
+          tdFecha.colSpan = 4
+          tdFecha.innerHTML = '<strong>' + capitalize(new Date(cobro.fecha).toLocaleDateString('es-mx', opciones)) + '</strong>'
+          trFecha.appendChild(tdFecha)
+          trFecha.className = 'table-primary'
+          tbody.appendChild(trFecha)
         }
-      })
-    }).finally(() => setLoadingHistorial(false))
+        if (cobro.cliente != "Cliente De Pruebas") {
+          const tr = document.createElement('tr')
+          const tdCliente = document.createElement('td')
+          const tdBarber = document.createElement('td')
+          const tdMetodo = document.createElement('td')
+          const span = document.createElement('span')
+          const tdTotal = document.createElement('td')
+          tdCliente.innerText = cobro.cliente
+          tdCliente.className = 'text-start'
+          tdBarber.innerText = cobro.barber ? cobro.barber : 'Trabajo en equipo'
+          tdBarber.className = 'text-start'
+          tdTotal.innerText = '$ ' + cobro.total
+          switch (cobro.metodoPago) {
+            case 'e':
+              span.innerText = 'Efectivo'
+              span.className = 'badge bg-success'
+              break;
+            case 't':
+              span.innerText = 'Tarjeta'
+              span.className = 'badge bg-info'
+              break;
+            case 'p':
+              span.innerText = 'Puntos'
+              span.className = 'badge bg-danger'
+              break;
+            default:
+              span.innerText = 'Mixto'
+              span.className = 'badge bg-warning'
+              break;
+          }
+          tdMetodo.appendChild(span)
+          tr.appendChild(tdCliente)
+          tr.appendChild(tdBarber)
+          tr.appendChild(tdMetodo)
+          tr.appendChild(tdTotal)
+          tr.className = 'pointer'
+          tr.setAttribute('data-bs-toggle', 'modal')
+          tr.setAttribute('data-bs-target', '#modal-cobros')
+          tr.addEventListener('click', () => openModal(cobro.id, cobro.cliente, cobro.total, cobro.subtotal, cobro.descuento, cobro.totalPuntos, cobro.metodoPago, cobro.barber, cobro.cobrador, cobro.fecha, cobro.pagoEfectivo, cobro.pagoTarjeta, cobro.pagoPuntos))
+          tbody.appendChild(tr)
+        }
+      }
+    })
+    setLoadingHistorial(false)
   }
 
   const ocultarHistorial = () => {
@@ -177,30 +152,27 @@ const Caja = ({ user }) => {
 
   return (
     <div className='container'>
-      {loadingCaja &&
-        <img className='my-4' src="src/images/caramel.gif" height={64} alt="" />
-      }
       <div className="row">
         <div className="col text-start"></div>
         <div className="col col-12 col-xl-6 shadow-sm rounded border pb-2 pt-3 px-3 mb-4 mx-auto">
           <div className="row">
-            <h1 className='mb-3'>Caja: <span className='badge bg-dark'>${+efectivo + +dineroElectronico}</span> </h1>
+            <h1 className='mb-3'>Caja: <span className='badge bg-dark'>${+caja.efectivo + +caja.dineroElectronico}</span> </h1>
             <div className="col">
               <strong>Efectivo</strong>
               <br /><h4>
-                <span className='badge bg-success'>${efectivo}</span>
+                <span className='badge bg-success'>${caja.efectivo}</span>
               </h4>
             </div>
             <div className="col">
               <strong>Dinero electrónico</strong>
               <br /><h4>
-                <span className='badge bg-primary'>${dineroElectronico}</span>
+                <span className='badge bg-primary'>${caja.dineroElectronico}</span>
               </h4>
             </div>
             <div className="col">
               <strong>Puntos canjeados</strong>
               <br /><h4>
-                <span className='badge bg-secondary'>{pts} pts.</span>
+                <span className='badge bg-secondary'>{caja.puntos} pts.</span>
               </h4>
             </div>
           </div>
@@ -244,9 +216,6 @@ const Caja = ({ user }) => {
         </div>
         <div className="col-5">
           {movimientos.length > 0 ? <div className="rounded shadow-sm bg-light px-1 py-1 border">
-            {loadingMovimientos &&
-              <img className='my-4' src="src/images/caramel.gif" height={64} alt="" />
-            }
             <h3>Movimientos de hoy</h3>
             <table className='table table-light table-sm'>
               <thead>
@@ -277,9 +246,9 @@ const Caja = ({ user }) => {
         <img className='my-4' src="src/images/caramel.gif" height={64} alt="" />
       }
 
-      <div className="my-4 position-fixed bottom-0 end-0  me-5">
-        <button onClick={() => addReporte(+efectivo + +dineroElectronico, empleado.nombre, movimientos, user.id, efectivo, dineroElectronico, pts)} className='btn btn-danger'><strong>Realizar reporte</strong></button>
-      </div>
+      {!reporte && <div className="my-4 position-fixed bottom-0 end-0  me-5">
+        <button onClick={() => addReporte(+caja.efectivo + +caja.dineroElectronico, empleado.nombre, movimientos, user.id, caja.efectivo, caja.dineroElectronico, caja.puntos, setReporte, getCaja)} className='btn btn-danger'><strong>Realizar reporte</strong></button>
+      </div>}
 
       {!historial
         ?
@@ -329,7 +298,7 @@ const Caja = ({ user }) => {
                       : metodoPago == 't'
                         ? <span className='text-primary'>${pagoTarjeta}</span>
                         : metodoPago == 'p' ? <span className='text-danger'>{pagoPuntos} pts.</span>
-                          : <div><span className='text-success'>Efectivo: ${pagoEfectivo}</span><span className='text-primary'> Tarjeta: ${pagoTarjeta} </span> <span className='text-danger'> Puntos: ${pagoPuntos}</span></div>}
+                          : <div><span className='text-success'>Efectivo: ${pagoEfectivo}</span><span className='text-primary'> Tarjeta: ${pagoTarjeta} </span> <span className='text-danger'> Puntos: {pagoPuntos}pts. = ${pagoPuntos / 2}</span></div>}
                   </h6>
                   <h5 className='mt-2 text-info'>Barbero que lo atendió </h5><span className='h6'>{barber ? barber : "Equipo"}</span>
                   <h5 className='mt-2 text-info'>Quién cobró </h5><span className='h6'>{cobrador}</span>

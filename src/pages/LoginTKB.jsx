@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import './login.css'
+import '../estilos/login.css'
 import { useNavigate } from 'react-router-dom'
 
 export const LoginTKB = ({ login }) => {

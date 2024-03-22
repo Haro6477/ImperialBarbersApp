@@ -1,5 +1,5 @@
 import React from 'react'
-import './navbar.css'
+import '../estilos/navbar.css'
 
 export const ButtonPlus = ({ children = "No", icon, openModal, setBtn, setBtnClientes }) => {
     return (

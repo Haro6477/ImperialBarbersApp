@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { BarberCard } from './BarberCard'
+import { BarberCard } from '../components/BarberCard'
 import { showAlert, addEmpleado, updateEmpleado, getActividadSemana, formatearFecha, getActividadCompleta } from '../funciones'
-import './barberCard.css'
+import '../estilos/barberCard.css'
 import Swal from 'sweetalert2'
 
-const Barbers = () => {
+const Barbers = ({ empleados, setEmpleados, listFotos, setListFotos }) => {
   // const server = 'http://localhost'
   const server = import.meta.env.VITE_SERVER
   const municipio = import.meta.env.VITE_MUNICIPIO
 
-  const [empleados, setEmpleados] = useState([])
   const [serviciosSemana, setServiciosSemana] = useState([])
   const [productosSemana, setProductosSemana] = useState([])
   const [servicios, setServicios] = useState([])
@@ -26,28 +25,14 @@ const Barbers = () => {
   const [estatus, setEstatus] = useState('')
   const [muni, setMunicipio] = useState(municipio)
   const [foto, setFoto] = useState("")
-  const [checkCatalogo, setCheckCatalogo] = useState(false)
-  const [checkHorarios, setCheckHorarios] = useState(false)
-  const [checkBarbers, setCheckBarbers] = useState(false)
-  const [checkCaja, setCheckCaja] = useState(false)
-  const [checkClientes, setCheckClientes] = useState(false)
   const [totalSemanaBarber, setTotalSemanaBarber] = useState(0)
-
-  const [listFotos, setListFotos] = useState([])
-  const [fotoActualizada, setFotoActualizada] = useState(false)
+  const [permisos, setPermisos] = useState({ checkCatalogo: false, checkHorarios: false, checkBarbers: false, checkCaja: false, checkClientes: false })
 
   const [operacion, setOperacion] = useState(1)
   const [title, setTitle] = useState("")
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    getEmpleados();
   }, [])
-
-  useEffect(() => {
-    getFotos()
-    setFotoActualizada(false)
-  }, [fotoActualizada])
 
   const getFotos = () => {
     fetch(`${server}/fotos-empleados`)
@@ -58,31 +43,7 @@ const Barbers = () => {
       })
   }
 
-  const getEmpleados = () => {
-    let emp = []
-    let permisos = []
-    axios.get(`${server}/empleados`).then((response) => {
-      emp = response.data
-    }).then(() => {
-      axios.get(`${server}/permisos`).then((res2) => {
-        permisos = res2.data
-      }).then(() => {
-        emp.forEach(empleado => {
-          empleado.permisos = []
-          permisos.forEach(permiso => {
-            if (empleado.id === permiso.idEmpleado) {
-              empleado.permisos.push(permiso.permiso)
-            }
-          });
-        });
-      })
-    }).finally(() => {
-      setEmpleados(emp)
-      setLoading(false)
-    })
-  }
-
-  const openModal = (op, id, nombre, telefono, correo, fechaInicio, fechaNacimiento, usuario, pass, puesto, estatus, permisos, foto, municipioActual) => {
+  const openModal = (op, id, nombre, telefono, correo, fechaInicio, fechaNacimiento, usuario, pass, puesto, estatus, permisosEmpleado, foto, municipioActual) => {
     setId(null)
     setNombre("")
     setTelefono("")
@@ -96,11 +57,13 @@ const Barbers = () => {
     setMunicipio(municipio)
     setFoto(null)
     setOperacion(op)
-    permisos? setCheckCatalogo(permisos.includes('catalogo')) : setCheckCatalogo(false)
-    permisos? setCheckHorarios(permisos.includes('horarios')) : setCheckHorarios(false)
-    permisos? setCheckBarbers(permisos.includes('barbers')) : setCheckBarbers(false)
-    permisos? setCheckCaja(permisos.includes('caja')) : setCheckCaja(false)
-    permisos? setCheckClientes(permisos.includes('clientes')) : setCheckClientes(false)
+    setPermisos({
+      checkCatalogo: false,
+      checkHorarios: false,
+      checkBarbers: false,
+      checkCaja: false,
+      checkClientes: false
+    });
 
     if (op === 1) {
       document.getElementById('btnAceptar').className = "btn btn-success"
@@ -145,6 +108,13 @@ const Barbers = () => {
         const fechaFormateada = yyyy + '-' + mm + '-' + dd;
         setFechaInicio(fechaFormateada)
       }
+      if (permisos) setPermisos({
+        checkCatalogo: permisosEmpleado.includes('catalogo'),
+        checkHorarios: permisosEmpleado.includes('horarios'),
+        checkBarbers: permisosEmpleado.includes('barbers'),
+        checkCaja: permisosEmpleado.includes('caja'),
+        checkClientes: permisosEmpleado.includes('clientes')
+      });
     }
     window.setTimeout(function () {
       document.getElementById('nombre').focus();
@@ -156,9 +126,9 @@ const Barbers = () => {
       showAlert('Escribe el nombre del empleado', 'warning')
     } else {
       if (operacion === 1) {
-        addEmpleado(nombre, telefono, correo, usuario, pass, puesto, estatus, foto, fechaInicio, fechaNacimiento, muni, getEmpleados)
+        addEmpleado(permisos, nombre, telefono, correo, usuario, pass, puesto, estatus, foto, fechaInicio, fechaNacimiento, muni, empleados, setEmpleados)
       } else {
-        updateEmpleado(checkCatalogo, checkHorarios, checkBarbers, checkCaja, checkClientes, nombre, telefono, correo, usuario, pass, puesto, estatus, foto, fechaInicio, fechaNacimiento, muni, id, getEmpleados)
+        updateEmpleado(permisos, nombre, telefono, correo, usuario, pass, puesto, estatus, foto, fechaInicio, fechaNacimiento, muni, id, empleados, setEmpleados)
       }
       document.getElementById('btnCerrarModal').click()
     }
@@ -183,12 +153,11 @@ const Barbers = () => {
     })
   }
 
-  const contenedor = document.getElementById("contenedor")
   const scrollLeft = () => {
-    contenedor.scrollLeft += 800;
+    document.getElementById("contenedor").scrollLeft += 800;
   }
   const scrollRight = () => {
-    contenedor.scrollLeft -= 800;
+    document.getElementById("contenedor").scrollLeft -= 800;
   }
 
   const calcularTotal = (lista1, lista2) => {
@@ -210,9 +179,6 @@ const Barbers = () => {
         </button>
       </div>
 
-      {loading &&
-        <img className='my-4' src="src/images/caramel.gif" height={64} alt="" />
-      }
       <div className="pb-5 mt-3 mb-5 border px-3 rounded bg-light shadow">
         <div className="d-flex justify-content-center">
           <div onClick={() => { scrollRight() }} className='rounded btn-flecha px-2 py-2 my-2'>
@@ -226,7 +192,7 @@ const Barbers = () => {
           <div className="row flex-row flex-nowrap">
             {
               empleados.map((empleado, i) => (
-                <BarberCard key={empleado.id} empleado={empleado} image={listFotos.find((image) => image == `empleado${empleado.id}.jpeg`)} setFotoActualizada={setFotoActualizada}>
+                <BarberCard key={empleado.id} empleado={empleado} image={listFotos.find((image) => image == `empleado${empleado.id}.webp`)} getFotos={getFotos}>
                   <div>
                     <button className='btn btn-warning' data-bs-toggle='modal' data-bs-target='#modalEmpleados'
                       onClick={() => openModal(2, empleado.id, empleado.nombre, empleado.telefono, empleado.correo, empleado.fechaInicio, empleado.fechaNacimiento, empleado.usuario, empleado.pass, empleado.puesto, empleado.estatus, empleado.permisos, empleado.foto, empleado.municipio)}
@@ -356,23 +322,23 @@ const Barbers = () => {
                 <div className="col-5 text-start rounded border mx-2 my-3 py-3 px-3">
                   <h5 className='text-warning'>Permisos</h5>
                   <div className="form-check form-switch">
-                    <input onChange={(e) => setCheckCatalogo(e.target.checked)} checked={checkCatalogo} className="form-check-input" type="checkbox" role="switch" id="catalogo" />
+                    <input onChange={(e) => setPermisos({ ...permisos, checkCatalogo: e.target.checked })} checked={permisos.checkCatalogo} className="form-check-input" type="checkbox" role="switch" id="catalogo" />
                     <label className="form-check-label" htmlFor="catalogo">Catálogo</label>
                   </div>
                   <div className="form-check form-switch">
-                    <input onChange={(e) => setCheckHorarios(e.target.checked)} checked={checkHorarios} className="form-check-input" type="checkbox" role="switch" id="horarios" />
+                    <input onChange={(e) => setPermisos({ ...permisos, checkHorarios: e.target.checked })} checked={permisos.checkHorarios} className="form-check-input" type="checkbox" role="switch" id="horarios" />
                     <label className="form-check-label" htmlFor="horarios">Horarios</label>
                   </div>
                   <div className="form-check form-switch">
-                    <input onChange={(e) => setCheckBarbers(e.target.checked)} checked={checkBarbers} className="form-check-input" type="checkbox" role="switch" id="barbers" />
+                    <input onChange={(e) => setPermisos({ ...permisos, checkBarbers: e.target.checked })} checked={permisos.checkBarbers} className="form-check-input" type="checkbox" role="switch" id="barbers" />
                     <label className="form-check-label" htmlFor="barbers">Barbers</label>
                   </div>
                   <div className="form-check form-switch">
-                    <input onChange={(e) => setCheckCaja(e.target.checked)} checked={checkCaja} className="form-check-input" type="checkbox" role="switch" id="caja" />
+                    <input onChange={(e) => setPermisos({ ...permisos, checkCaja: e.target.checked })} checked={permisos.checkCaja} className="form-check-input" type="checkbox" role="switch" id="caja" />
                     <label className="form-check-label" htmlFor="caja">Caja</label>
                   </div>
                   <div className="form-check form-switch">
-                    <input onChange={(e) => setCheckClientes(e.target.checked)} checked={checkClientes} className="form-check-input" type="checkbox" role="switch" id="clientes" />
+                    <input onChange={(e) => setPermisos({ ...permisos, checkClientes: e.target.checked })} checked={permisos.checkClientes} className="form-check-input" type="checkbox" role="switch" id="clientes" />
                     <label className="form-check-label" htmlFor="clientes">Clientes</label>
                   </div>
                 </div>

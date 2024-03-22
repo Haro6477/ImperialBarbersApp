@@ -12,7 +12,7 @@ export const BarraBusqueda = ({ idBarber, datos = [], datos2, setDato, txtInput 
             if (input.value == "") {
                 selectDrop.className = classInputNone
                 setCumple && setCumple(false)
-                setDato({})
+                setDato(null)
             }
             else selectDrop.className = classInputBlock
             resolve();
