@@ -4,7 +4,7 @@ import { showAlert, addEmpleado, updateEmpleado, getActividadSemana, formatearFe
 import '../estilos/barberCard.css'
 import Swal from 'sweetalert2'
 
-const Barbers = ({ empleados, setEmpleados, listFotos, setListFotos }) => {
+const Barbers = ({user, empleados, setEmpleados, listFotos, setListFotos }) => {
   // const server = 'http://localhost'
   const server = import.meta.env.VITE_SERVER
   const municipio = import.meta.env.VITE_MUNICIPIO
@@ -26,7 +26,7 @@ const Barbers = ({ empleados, setEmpleados, listFotos, setListFotos }) => {
   const [muni, setMunicipio] = useState(municipio)
   const [foto, setFoto] = useState("")
   const [totalSemanaBarber, setTotalSemanaBarber] = useState(0)
-  const [permisos, setPermisos] = useState({ checkCatalogo: false, checkHorarios: false, checkBarbers: false, checkCaja: false, checkClientes: false })
+  const [permisos, setPermisos] = useState({ checkCatalogo: false, checkHorarios: false, checkBarbers: false, checkCaja: false, checkClientes: false, checkEditar: false })
 
   const [operacion, setOperacion] = useState(1)
   const [title, setTitle] = useState("")
@@ -62,7 +62,8 @@ const Barbers = ({ empleados, setEmpleados, listFotos, setListFotos }) => {
       checkHorarios: false,
       checkBarbers: false,
       checkCaja: false,
-      checkClientes: false
+      checkClientes: false,
+      checkEditar: false
     });
 
     if (op === 1) {
@@ -113,7 +114,8 @@ const Barbers = ({ empleados, setEmpleados, listFotos, setListFotos }) => {
         checkHorarios: permisosEmpleado.includes('horarios'),
         checkBarbers: permisosEmpleado.includes('barbers'),
         checkCaja: permisosEmpleado.includes('caja'),
-        checkClientes: permisosEmpleado.includes('clientes')
+        checkClientes: permisosEmpleado.includes('clientes'),
+        checkEditar: permisosEmpleado.includes('editar')
       });
     }
     window.setTimeout(function () {
@@ -194,13 +196,13 @@ const Barbers = ({ empleados, setEmpleados, listFotos, setListFotos }) => {
               empleados.map((empleado, i) => (
                 <BarberCard key={empleado.id} empleado={empleado} image={listFotos.find((image) => image == `empleado${empleado.id}.webp`)} getFotos={getFotos}>
                   <div>
-                    <button className='btn btn-warning' data-bs-toggle='modal' data-bs-target='#modalEmpleados'
+                    <button disabled={!user.permisos.includes('editar')} className='btn btn-warning' data-bs-toggle='modal' data-bs-target='#modalEmpleados'
                       onClick={() => openModal(2, empleado.id, empleado.nombre, empleado.telefono, empleado.correo, empleado.fechaInicio, empleado.fechaNacimiento, empleado.usuario, empleado.pass, empleado.puesto, empleado.estatus, empleado.permisos, empleado.foto, empleado.municipio)}
                     >
                       <i className="fa-solid fa-edit"></i>
                     </button>
                     &nbsp;
-                    <button onClick={() => deleteEmpleado(empleado.id, empleado.nombre)} className="btn btn-danger">
+                    <button disabled={!user.permisos.includes('editar')} onClick={() => deleteEmpleado(empleado.id, empleado.nombre)} className="btn btn-danger">
                       <i className="fa-solid fa-trash"></i>
                     </button>
                     &nbsp;
@@ -340,6 +342,10 @@ const Barbers = ({ empleados, setEmpleados, listFotos, setListFotos }) => {
                   <div className="form-check form-switch">
                     <input onChange={(e) => setPermisos({ ...permisos, checkClientes: e.target.checked })} checked={permisos.checkClientes} className="form-check-input" type="checkbox" role="switch" id="clientes" />
                     <label className="form-check-label" htmlFor="clientes">Clientes</label>
+                  </div>
+                  <div className="form-check form-switch">
+                    <input onChange={(e) => setPermisos({ ...permisos, checkEditar: e.target.checked })} checked={permisos.checkEditar} className="form-check-input custom-checkbox" type="checkbox" role="switch" id="editar" />
+                    <label className="form-check-label" htmlFor="editar">Editar</label>
                   </div>
                 </div>
               </div>

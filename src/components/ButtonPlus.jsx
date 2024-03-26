@@ -1,10 +1,10 @@
 import React from 'react'
 import '../estilos/navbar.css'
 
-export const ButtonPlus = ({ children = "No", icon, openModal, setBtn, setBtnClientes }) => {
+export const ButtonPlus = ({ children = "No", icon, openModal, setBtn, setBtnClientes, disabled=false }) => {
     return (
         <div className="btn-group" role="group">
-            <button onClick={() => setBtn(setBtnClientes)} className="btn btn-outline-secondary mb-2" type="button">
+            <button disabled={disabled} onClick={() => setBtn(setBtnClientes)} className="btn btn-outline-secondary mb-2" type="button">
                 {icon && <i className={icon + " me-2"}></i>}
                 {children}
             </button>

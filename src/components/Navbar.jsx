@@ -23,7 +23,6 @@ export const Navbar = ({ logout, funciones, estados, user, clientes, setClientes
   const [conceptoRetiro, setConceptoRetiro] = useState("")
   const [cantidadIngreso, setCantidadIngreso] = useState("")
   const [cantidadRetiro, setCantidadRetiro] = useState("")
-  const [permisos, setPermisos] = useState([])
   const [foto, setFoto] = useState('/src/images/barber-profile.webp')
 
   const [empleado, setEmpleado] = useState("")
@@ -41,7 +40,6 @@ export const Navbar = ({ logout, funciones, estados, user, clientes, setClientes
   let horaDescanso = "00:00:00"
 
   useEffect(() => {
-    getPermisos();
     getEmpleado(user.id, setEmpleado)
     getDescanso()
   }, [])
@@ -78,16 +76,6 @@ export const Navbar = ({ logout, funciones, estados, user, clientes, setClientes
       .catch(err => {
         console.log(err)
       })
-  }
-
-  const getPermisos = () => {
-    axios.get(`${server}/permisos-usuario/${user.id}`).then((res) => {
-      let perms = []
-      res.data.forEach(item => {
-        perms.push(item.permiso)
-      });
-      setPermisos(perms)
-    })
   }
 
   const getDescanso = () => {
@@ -165,28 +153,28 @@ export const Navbar = ({ logout, funciones, estados, user, clientes, setClientes
                   : <ButtonOutline icon="fa-solid fa-credit-card">Realizar Venta</ButtonOutline>}
               </li>
               <li className="nav-item">
-                {permisos.includes('clientes')
+                {user.permisos.includes('clientes')
                   ? estados.btnClientes
                     ? <ButtonPlusActive setBtn={setBtn} setBtnClientes={funciones.setBtnClientes} openModal={openModal} icon="fa-solid fa-address-book">Clientes</ButtonPlusActive>
                     : <ButtonPlus setBtn={setBtn} setBtnClientes={funciones.setBtnClientes} openModal={openModal} icon="fa-solid fa-address-book">Clientes</ButtonPlus>
-                  : <ButtonOutline disabled={true} icon="fa-solid fa-address-book">Clientes</ButtonOutline>}
+                  : <ButtonPlus setBtn={setBtn} setBtnClientes={funciones.setBtnClientes} openModal={openModal} icon="fa-solid fa-address-book" disabled>Clientes</ButtonPlus>}
               </li>
-              <li onClick={() => { if (permisos.includes('catalogo')) setBtn(funciones.setBtnCatalogo) }} className="nav-item">
-                {permisos.includes('catalogo')
+              <li onClick={() => { if (user.permisos.includes('catalogo')) setBtn(funciones.setBtnCatalogo) }} className="nav-item">
+                {user.permisos.includes('catalogo')
                   ? estados.btnCatalogo
                     ? <ButtonPill icon="fa-solid fa-book-open">Catálogo </ButtonPill>
                     : <ButtonOutline icon="fa-solid fa-book-open">Catálogo</ButtonOutline>
                   : <ButtonOutline disabled={true} icon="fa-solid fa-book-open">Catálogo</ButtonOutline>}
               </li>
-              <li onClick={() => { if (permisos.includes('horarios')) setBtn(funciones.setBtnHorarios) }} className="nav-item">
-                {permisos.includes('horarios')
+              <li onClick={() => { if (user.permisos.includes('horarios')) setBtn(funciones.setBtnHorarios) }} className="nav-item">
+                {user.permisos.includes('horarios')
                   ? estados.btnHorarios
                     ? <ButtonPill icon="fa-solid fa-clock">Horarios </ButtonPill>
                     : <ButtonOutline icon="fa-solid fa-clock">Horarios</ButtonOutline>
                   : <ButtonOutline disabled={true} icon="fa-solid fa-clock">Horarios</ButtonOutline>}
               </li>
-              <li onClick={() => { if (permisos.includes('barbers')) setBtn(funciones.setBtnBarbers) }} className="nav-item">
-                {permisos.includes('barbers')
+              <li onClick={() => { if (user.permisos.includes('barbers')) setBtn(funciones.setBtnBarbers) }} className="nav-item">
+                {user.permisos.includes('barbers')
                   ? estados.btnBarbers
                     ? <ButtonPill icon="fa-solid fa-scissors">Barbers </ButtonPill>
                     : <ButtonOutline icon="fa-solid fa-scissors">Barbers</ButtonOutline>
@@ -198,8 +186,8 @@ export const Navbar = ({ logout, funciones, estados, user, clientes, setClientes
                   : <ButtonOutline icon="fa-solid fa-calendar">Agenda</ButtonOutline>}
               </li>
 
-              <li onClick={() => { if (permisos.includes('caja')) setBtn(funciones.setBtnCaja) }} className="nav-item">
-                {permisos.includes('caja')
+              <li onClick={() => { if (user.permisos.includes('caja')) setBtn(funciones.setBtnCaja) }} className="nav-item">
+                {user.permisos.includes('caja')
                   ? estados.btnCaja
                     ? <ButtonPill icon="fa-solid fa-cash-register">Caja </ButtonPill>
                     : <ButtonOutline icon="fa-solid fa-cash-register">Caja</ButtonOutline>

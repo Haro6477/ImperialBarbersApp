@@ -10,10 +10,10 @@ import Caja from './Caja.jsx'
 import { Perfil } from './Perfil.jsx'
 import { useLocalStorage } from '../useLocalStorage.jsx'
 
-export const Inicio = ({ logout, user, clientes, setClientes, empleados, setEmpleados, listFotos, setListFotos, productos, setProductos, servicios, setServicios, cobros, setCobros, movimientosHoy, setMovimientosHoy, reporte, setReporte }) => {
+export const Inicio = ({ logout, user, clientes, setClientes, empleados, setEmpleados, horarios, setHorarios, listFotos, setListFotos, productos, setProductos, servicios, setServicios, cobros, setCobros, movimientosHoy, setMovimientosHoy, reporte, setReporte }) => {
     const server = import.meta.env.VITE_SERVER
     const municipio = import.meta.env.VITE_MUNICIPIO
-    
+
     const [btnVenta, setBtnVenta] = useState(true)
     const [btnClientes, setBtnClientes] = useState(false)
     const [btnCatalogo, setBtnCatalogo] = useState(false)
@@ -57,13 +57,13 @@ export const Inicio = ({ logout, user, clientes, setClientes, empleados, setEmpl
     return (
         <div style={{ minHeight: '100vh' }}>
             <Navbar logout={cerrarSesion} funciones={funciones} estados={estados} user={user} clientes={clientes} setClientes={setClientes} movimientos={movimientosHoy} setMovimientos={setMovimientosHoy} getCaja={getCaja} />
-            {btnVenta && <Venta user={user} clientes={clientes} setClientes={setClientes} empleados={empleados} productos={productos} servicios={servicios} getCaja={getCaja} setProductos={setProductos}/>}
-            {btnClientes && <Clientes clientes={clientes} setClientes={setClientes} />}
-            {btnCatalogo && <Catalogo productos={productos} setProductos={setProductos} servicios={servicios} setServicios={setServicios} />}
-            {btnHorarios && <Horarios empleados={empleados}/>}
-            {btnBarbers && <Barbers empleados={empleados} setEmpleados={setEmpleados} listFotos={listFotos} setListFotos={setListFotos}/>}
+            {btnVenta && <Venta user={user} clientes={clientes} setClientes={setClientes} empleados={empleados} productos={productos} servicios={servicios} getCaja={getCaja} setProductos={setProductos} />}
+            {btnClientes && <Clientes user={user} clientes={clientes} setClientes={setClientes} />}
+            {btnCatalogo && <Catalogo user={user} productos={productos} setProductos={setProductos} servicios={servicios} setServicios={setServicios} />}
+            {btnHorarios && <Horarios user={user} empleados={empleados} horarios={horarios} setHorarios={setHorarios} />}
+            {btnBarbers && <Barbers user={user} empleados={empleados} setEmpleados={setEmpleados} listFotos={listFotos} setListFotos={setListFotos} />}
             {btnAgenda && <Agenda />}
-            {btnCaja && <Caja user={user} cobros={cobros} setCobros={setCobros} movimientos={movimientosHoy} reporte={reporte} setReporte={setReporte} caja={caja} getCaja={getCaja}/>}
+            {btnCaja && <Caja user={user} cobros={cobros} setCobros={setCobros} movimientos={movimientosHoy} reporte={reporte} setReporte={setReporte} caja={caja} getCaja={getCaja} />}
             {btnPerfil && <Perfil user={user} />}
         </div>
     )

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import '../estilos/forms.css'
-import { addCobro, showAlert } from '../funciones'
+import { addCobro, addCuenta, showAlert } from '../funciones'
 import { ImprimirTicket } from '../Impresiones'
 import { BarraBusqueda } from '../components/BarraBusqueda'
 import { FilaTablaVenta } from '../components/filaTablaVenta'
@@ -103,7 +103,7 @@ const Venta = ({ user, clientes, setClientes, empleados, productos, servicios, g
         break;
       case 'p':
         if (cliente.pts / 2 >= subtotal) {
-          addCobro(cliente.nombre, empleado.nombre, cliente.pts, +descuento / 100 * +subtotal, subtotal, divider, clientes, setClientes, cliente.id, subtotal - descuento / 100 * subtotal, - pts, metodoPago, empleado.id, user.id, 0, 0, subtotal * 2 - +descuento / 100 * +subtotal, listaProductos, listaServicios, getCaja, productos, setProductos)
+          addCobro(cliente.nombre, empleado.nombre, cliente.pts, +descuento / 100 * +subtotal, subtotal, divider, clientes, setClientes, cliente.id, subtotal - descuento / 100 * subtotal, - subtotal * 2, metodoPago, empleado.id, user.id, 0, 0, subtotal * 2 - +descuento / 100 * +subtotal, listaProductos, listaServicios, getCaja, productos, setProductos)
         } else {
           showAlert("Puntos insuficientes", 'error')
           return
@@ -153,6 +153,7 @@ const Venta = ({ user, clientes, setClientes, empleados, productos, servicios, g
     }
     setDivider(!divider)
   }
+
 
   return (
     <div className='container'>
@@ -211,7 +212,7 @@ const Venta = ({ user, clientes, setClientes, empleados, productos, servicios, g
             <tr>
               <td></td><td></td><td></td>
               <td className='text-end'><strong>Total:</strong></td>
-              <td className='h4'>${subtotal} {descuento > 0 && <span className='text-info'>-%{descuento} = <span className='text-primary h3'>${+descuento / 100 * -subtotal + +subtotal}</span> </span>}</td>
+              <td className='h4'>${subtotal} {descuento > 0 && <span className='text-info'>-%{descuento} = <span className='text-primary h3'>${-descuento / 100 * subtotal + +subtotal}</span> </span>}</td>
             </tr>
           </tfoot>
         </table>
@@ -330,7 +331,17 @@ const Venta = ({ user, clientes, setClientes, empleados, productos, servicios, g
               }
             </div>
           }
-          {((listaProductos.length != 0 || listaServicios.length != 0) && Object.keys(cliente).length > 0) && <button onClick={nuevoCobro} className='btn btn-success w-75 my-3'>Registrar</button>}
+          <div className="row">
+            <div className="col">
+              {((listaProductos.length != 0 || listaServicios.length != 0) && Object.keys(cliente).length > 0 && user.puesto == "Administrador")
+                && <button onClick={() => addCuenta(cliente.id, cliente.nombre, cliente.pts, empleado.id, empleado.nombre, subtotal - descuento / 100 * subtotal, +descuento / 100 * +subtotal, subtotal, ptsAcumulados - descuento / 100 * ptsAcumulados, 'c', divider, user.id, 0, 0, 0, listaServicios, listaProductos, productos, setProductos, clientes, setClientes)}
+                  className='btn btn-warning w-100 my-3 text-white'>A cuenta</button>}
+            </div>
+            <div className="col-9">
+              {((listaProductos.length != 0 || listaServicios.length != 0) && Object.keys(cliente).length > 0) && <button disabled={metodoPago == 'm' && (subtotal - descuento / 100 * subtotal - pts / 2 - tarjeta - efectivo) != 0} onClick={nuevoCobro} className='btn btn-success w-100 my-3'>Registrar</button>}
+            </div>
+
+          </div>
         </div>
       </div>
     </div>

@@ -158,6 +158,97 @@ export const getEmpleados = (setEmpleados, setHorarios) => {
   })
 }
 
+export const addCuenta = (idCliente, nombreCliente, ptsCliente, idBarber, nombreBarber, total, descuento, subtotal, ptsAcumulados, metodoPago, divider, idCobrador, pagoEfectivo, pagoTarjeta, pagoPuntos, listaServicios, listaProductos, productos, setProductos, clientes, setClientes) => {
+  Swal.fire({
+    title: 'Descripción',
+    input: 'textarea',
+    showCancelButton: true,
+    confirmButtonColor: '#077013',
+    cancelButtonColor: '#303040',
+    confirmButtonText: 'Confirmar',
+    cancelButtonText: 'Cancelar'
+  }).then(function (result) {
+    if (result.value) {
+      Axios.post(`${server}/create-cobro`, {
+        idCliente: idCliente,
+        total: total,
+        descuento: descuento,
+        subtotal: subtotal,
+        totalPuntos: ptsAcumulados,
+        metodoPago: metodoPago,
+        idBarber: divider ? 7 : idBarber,
+        idCobrador: idCobrador,
+        pagoEfectivo: pagoEfectivo,
+        pagoTarjeta: pagoTarjeta,
+        pagoPuntos: pagoPuntos,
+        municipio: municipio
+      }).then((res) => {
+        ImprimirTicket(res.data.insertId, descuento, subtotal, listaServicios, listaProductos, total, pagoEfectivo, pagoTarjeta, pagoPuntos, nombreCliente, nombreBarber, Math.trunc(+ptsCliente + +ptsAcumulados))
+        idCliente != '122'
+          ? showAlertBtn("Venta registrada", 'success', "¿Desea reeimprimir el Ticket?", undefined, res.data.insertId, descuento, subtotal, listaServicios, listaProductos, total, pagoEfectivo, pagoTarjeta, pagoPuntos, nombreCliente, nombreBarber, Math.trunc(+ptsCliente + +ptsAcumulados))
+          : showAlertBtn("Venta de prueba", 'info', "¿Desea reeimprimir el Ticket?", undefined, res.data.insertId, descuento, subtotal, listaServicios, listaProductos, total, pagoEfectivo, pagoTarjeta, pagoPuntos, nombreCliente, nombreBarber, Math.trunc(+ptsCliente + +ptsAcumulados))
+        listaServicios.forEach(servicio => {
+          Axios.post(`${server}/create-detalle-servicio`, {
+            idCobro: res.data.insertId,
+            idServicio: servicio.id,
+            cantidad: servicio.cantidad,
+            precioActual: servicio.precio,
+            puntosActual: servicio.pts,
+            idBarber: divider ? servicio.idBarber : idBarber
+          })
+        });
+        listaProductos.forEach(producto => {
+          Axios.post(`${server}/create-detalle-producto`, {
+            idCobro: res.data.insertId,
+            idProducto: producto.id,
+            cantidad: producto.cantidad,
+            precioActual: producto.precio,
+            puntosActual: producto.pts,
+            idBarber: divider ? producto.idBarber : idBarber
+          })
+          Axios.put(`${server}/update-inventario`, {
+            cantidad: - producto.cantidad,
+            id: producto.id,
+          })
+          const indiceProducto = productos.findIndex((p) => p.id === producto.id);
+          const productosActualizado = [...productos]
+          productosActualizado[indiceProducto].enVenta -= producto.cantidad
+          setProductos(productosActualizado)
+        })
+        Axios.put(`${server}/update-cliente-pts`, {
+          pts: ptsAcumulados,
+          id: idCliente,
+        }).then((res) => {
+          const indiceCliente = clientes.findIndex((cliente) => cliente.id === res.data.id);
+          if (indiceCliente !== -1) {
+            const clienteActualizado = res.data;
+            const nuevosClientes = [...clientes]
+            nuevosClientes[indiceCliente] = clienteActualizado
+            setClientes(nuevosClientes);
+          }
+        })
+        if (idCliente != '122') {
+          Axios.put(`${server}/update-caja`, {
+            efectivo: pagoEfectivo,
+            dineroElectronico: pagoTarjeta,
+            puntos: pagoPuntos,
+            id: municipio
+          }).then(() => getCaja())
+        }
+        Axios.post(`${server}/create-cuenta`, {
+          idCliente: idCliente,
+          idCobro: res.data.insertId,
+          descripcion: result.value
+        }).then(() => {
+          const msg = "Registrado a cuenta de " + nombreCliente
+          showAlert(msg, 'success')
+        })
+      })
+    }
+  })
+
+}
+
 function checksToPermisos(checks, idBarber) {
   let permisos = []
   for (const check in checks) {
@@ -177,6 +268,9 @@ function checksToPermisos(checks, idBarber) {
           break;
         case 'checkClientes':
           permisos.push({ permiso: 'clientes', idEmpleado: idBarber })
+          break;
+        case 'checkEditar':
+          permisos.push({ permiso: 'editar', idEmpleado: idBarber })
           break;
         default:
           break;
@@ -208,6 +302,9 @@ export const addEmpleado = (permisos, nombre, telefono, correo, usuario, pass, p
     foto: foto,
     municipio: muni
   }).then((resEmpleado) => {
+    Axios.post(`${server}/create-horario`, {
+      idBarber: resEmpleado.data.id,
+    })
     let empleadoAux = resEmpleado.data
     const permisosEmpleado = checksToPermisos(permisos, empleadoAux.id)
     Axios.post(`${server}/create-permisos`, {
@@ -222,7 +319,7 @@ export const addEmpleado = (permisos, nombre, telefono, correo, usuario, pass, p
   })
 }
 
-export const updateEmpleado = (permisos, nombre, telefono, correo, usuario, pass, puesto, estatus, foto, fechaInicio, fechaNacimiento, muni, id, empleados, setEmpleados) => {
+export const updateEmpleado = (checksPermisos, nombre, telefono, correo, usuario, pass, puesto, estatus, foto, fechaInicio, fechaNacimiento, muni, id, empleados, setEmpleados) => {
   Axios.put(`${server}/update-empleado`, {
     nombre: capitalize(nombre),
     telefono: telefono,
@@ -236,7 +333,7 @@ export const updateEmpleado = (permisos, nombre, telefono, correo, usuario, pass
     municipio: muni,
     id: id,
   }).then(() => {
-    const permisosEmpleado = checksToPermisos(permisos, id)
+    const permisosEmpleado = checksToPermisos(checksPermisos, id)
     Axios.delete(`${server}/delete-permisos/${id}`).then(() => {
       Axios.post(`${server}/create-permisos`, {
         permisos: permisosEmpleado,
@@ -566,7 +663,7 @@ export const crearHorario = (id) => {
     idBarber: id
   })
 }
-export const guardarHorario = (obtenerEmpleados, lunIn, lunOut, marIn, marOut, mieIn, mieOut, jueIn, jueOut, vieIn, vieOut, sabIn, sabOut, domIn, domOut, idBarber) => {
+export const guardarHorario = (horarios, setHorarios, lunIn, lunOut, marIn, marOut, mieIn, mieOut, jueIn, jueOut, vieIn, vieOut, sabIn, sabOut, domIn, domOut, idBarber) => {
   Axios.put(`${server}/update-horario`, {
     idBarber: idBarber,
     lunIn: lunIn,
@@ -584,7 +681,23 @@ export const guardarHorario = (obtenerEmpleados, lunIn, lunOut, marIn, marOut, m
     domIn: domIn,
     domOut: domOut
   }).then(() => {
-    obtenerEmpleados()
+    const indiceHorario = horarios.findIndex((h) => h.idBarber === idBarber);
+    const horariosActualizado = [...horarios]
+    horariosActualizado[indiceHorario].lunIn = lunIn
+    horariosActualizado[indiceHorario].lunOut = lunOut
+    horariosActualizado[indiceHorario].marIn = marIn
+    horariosActualizado[indiceHorario].marOut = marOut
+    horariosActualizado[indiceHorario].mieIn = mieIn
+    horariosActualizado[indiceHorario].mieOut = mieOut
+    horariosActualizado[indiceHorario].jueIn = jueIn
+    horariosActualizado[indiceHorario].jueOut = jueOut
+    horariosActualizado[indiceHorario].vieIn = vieIn
+    horariosActualizado[indiceHorario].vieOut = vieOut
+    horariosActualizado[indiceHorario].sabIn = sabIn
+    horariosActualizado[indiceHorario].sabOut = sabOut
+    horariosActualizado[indiceHorario].domIn = domIn
+    horariosActualizado[indiceHorario].domOut = domOut
+    setHorarios(horariosActualizado)
     showAlert("Horario actualizado", 'success')
   })
 }

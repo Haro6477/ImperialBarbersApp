@@ -16,6 +16,7 @@ function App() {
   const [user, setUser] = useLocalStorage('user', null)
   const [clientes, setClientes] = useLocalStorage('clientes', [])
   const [empleados, setEmpleados] = useLocalStorage('empleados', [])
+  const [horarios, setHorarios] = useLocalStorage('horarios', [])
   const [productos, setProductos] = useLocalStorage('productos', [])
   const [servicios, setServicios] = useLocalStorage('servicios', [])
   const [cobros, setCobros] = useLocalStorage('cobros', [])
@@ -26,6 +27,7 @@ function App() {
   useEffect(() => {
     if (clientes.length == 0) getClientes()
     if (empleados.length == 0) getEmpleados()
+    if (horarios.length == 0) getHorarios()
     if (listFotos.length == 0) getFotos()
     if (productos.length == 0) getProductos()
     if (servicios.length == 0) getServicios()
@@ -75,6 +77,13 @@ function App() {
       })
   }
 
+  const getHorarios = () => {
+    console.log("Cargando horarios...")
+    axios.get(`${server}/horarios`).then((response) => {
+      setHorarios(response.data);
+    }).then(() => { console.log("Horarios listos") })
+  }
+
   const getProductos = () => {
     console.log("Cargando productos...")
     axios.get(`${server}/productos/${municipio}`).then((response) => {
@@ -118,7 +127,15 @@ function App() {
     const instruccion = server + '/auth/' + usuario + '/' + pass
     axios.get(instruccion).then((response) => {
       if (response.data[0]) {
-        setUser(response.data[0])
+        axios.get(`${server}/permisos-usuario/${response.data[0].id}`).then((res) => {
+          let perms = []
+          res.data.forEach(item => {
+            perms.push(item.permiso)
+          });
+          let usuarioAux = response.data[0]
+          usuarioAux.permisos = perms
+          setUser(usuarioAux)
+        })
         axios.put(`${server}/cambio-municipio`, {
           id: response.data[0].id,
           municipio: municipio
@@ -128,7 +145,7 @@ function App() {
             axios.post(`${server}/create-chequeos`, {
               idBarber: response.data[0].id,
               municipio: municipio
-            }).then((resCreate) => {
+            }).then(() => {
               showAlert('Hora de llegada:\n' + (new Date).toLocaleTimeString('es-mx', { hour12: true }), 'success')
             })
           }
@@ -155,9 +172,10 @@ function App() {
         <Route element={<RutasProtegidas isAllowed={!!user} />}>
           <Route path='/'
             element={<Inicio
-              logout={logout} user={user}
+              logout={logout} user={user} setUser={setUser}
               clientes={clientes} setClientes={setClientes}
               empleados={empleados} setEmpleados={setEmpleados}
+              horarios={horarios} setHorarios={setHorarios}
               listFotos={listFotos} setListFotos={setListFotos}
               productos={productos} setProductos={setProductos}
               servicios={servicios} setServicios={setServicios}

@@ -123,6 +123,10 @@ const Caja = ({ user, cobros, setCobros, movimientos, reporte, setReporte, caja,
               span.innerText = 'Puntos'
               span.className = 'badge bg-danger'
               break;
+            case 'c':
+              span.innerText = 'Cuenta'
+              span.className = 'badge bg-primary'
+              break;
             default:
               span.innerText = 'Mixto'
               span.className = 'badge bg-warning'
@@ -206,7 +210,8 @@ const Caja = ({ user, cobros, setCobros, movimientos, reporte, setReporte, caja,
                     {cobro.metodoPago == 'e' ? <td> <span className={cobro.cliente == "Cliente De Pruebas" ? 'badge text-secondary' : 'badge bg-success'}>Efectivo</span></td>
                       : cobro.metodoPago == 't' ? <td><span className='badge bg-info'>Tarjeta</span></td>
                         : cobro.metodoPago == 'p' ? <td><span className='badge bg-danger'>Puntos</span></td>
-                          : <td><span className='badge bg-warning'>Mixto</span></td>}
+                          : cobro.metodoPago == 'c' ? <td><span className='badge bg-primary'>Cuenta</span></td>
+                            : <td><span className='badge bg-warning'>Mixto</span></td>}
                     {cobro.cliente == "Cliente De Pruebas" ? <td className='text-secondary'>${cobro.total}</td> : <td>${cobro.total}</td>}
                   </tr>
                 ))}
@@ -247,7 +252,7 @@ const Caja = ({ user, cobros, setCobros, movimientos, reporte, setReporte, caja,
       }
 
       {!reporte && <div className="my-4 position-fixed bottom-0 end-0  me-5">
-        <button onClick={() => addReporte(+caja.efectivo + +caja.dineroElectronico, empleado.nombre, movimientos, user.id, caja.efectivo, caja.dineroElectronico, caja.puntos, setReporte, getCaja)} className='btn btn-danger'><strong>Realizar reporte</strong></button>
+        <button disabled={!user.permisos.includes('editar')} onClick={() => addReporte(+caja.efectivo + +caja.dineroElectronico, empleado.nombre, movimientos, user.id, caja.efectivo, caja.dineroElectronico, caja.puntos, setReporte, getCaja)} className='btn btn-danger'><strong>Realizar reporte</strong></button>
       </div>}
 
       {!historial
@@ -291,13 +296,14 @@ const Caja = ({ user, cobros, setCobros, movimientos, reporte, setReporte, caja,
                   <h3 className='mt-2 text-info'>Total: <span className='text-success'>${totalCobro}</span></h3>
                   <h5 className='mt-2 text-info'>Puntos ganados: <span className='text-dark'>{totalPuntos} pts.</span></h5>
                   <hr />
-                  <h5 className='mt-2 text-info'>Método de pago </h5><span className='h6'>{metodoPago == 'e' ? 'Efectivo' : metodoPago == 't' ? 'Tarjeta' : metodoPago == 'p' ? 'Puntos' : 'Mixto'}</span>
+                  <h5 className='mt-2 text-info'>Método de pago </h5><span className='h6'>{metodoPago == 'e' ? 'Efectivo' : metodoPago == 't' ? 'Tarjeta' : metodoPago == 'p' ? 'Puntos' : metodoPago == 'c' ? 'Cuenta' : 'Mixto'}</span>
                   <h6 className='text-dark'>
                     {metodoPago == 'e'
                       ? <span className='text-success'>${pagoEfectivo}</span>
                       : metodoPago == 't'
                         ? <span className='text-primary'>${pagoTarjeta}</span>
-                        : metodoPago == 'p' ? <span className='text-danger'>{pagoPuntos} pts.</span>
+                        : metodoPago == 'p'
+                          ? <span className='text-danger'>{pagoPuntos} pts.</span>
                           : <div><span className='text-success'>Efectivo: ${pagoEfectivo}</span><span className='text-primary'> Tarjeta: ${pagoTarjeta} </span> <span className='text-danger'> Puntos: {pagoPuntos}pts. = ${pagoPuntos / 2}</span></div>}
                   </h6>
                   <h5 className='mt-2 text-info'>Barbero que lo atendió </h5><span className='h6'>{barber ? barber : "Equipo"}</span>

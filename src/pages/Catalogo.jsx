@@ -5,7 +5,7 @@ import { BarraBusqueda2 } from '../components/BarraBusqueda2'
 import Swal from 'sweetalert2'
 
 
-const Catalogo = ({ productos, setProductos, servicios, setServicios }) => {
+const Catalogo = ({ user, productos, setProductos, servicios, setServicios }) => {
   // const server = 'http://localhost'
   const server = import.meta.env.VITE_SERVER
   const municipio = import.meta.env.VITE_MUNICIPIO
@@ -194,7 +194,7 @@ const Catalogo = ({ productos, setProductos, servicios, setServicios }) => {
             <div className="col"></div>
             <div className="col"><h2 className='text-light '>Productos</h2></div>
             <div className="col text-end">
-              <button className='btn btn-info' data-bs-toggle='modal' data-bs-target='#modal-productos' onClick={() => openModalProductos(1)}>
+              <button disabled={!user.permisos.includes('editar')} className='btn btn-info' data-bs-toggle='modal' data-bs-target='#modal-productos' onClick={() => openModalProductos(1)}>
                 <i className="fa-solid fa-plus"></i>
               </button>
             </div>
@@ -363,10 +363,10 @@ const Catalogo = ({ productos, setProductos, servicios, setServicios }) => {
                 <button id='btnCerrarModal' type='button' className="btn btn-secondary me-3 my-3" data-bs-dismiss='modal'>
                   <i className="fa-solid fa-xmark me-2" />Cerrar
                 </button>
-                <button onClick={() => eliminarProducto()} id='btnEliminarP' type='button' className="btn btn-danger me-3 my-3">
+                <button disabled={!user.permisos.includes('editar')} onClick={() => eliminarProducto()} id='btnEliminarP' type='button' className="btn btn-danger me-3 my-3">
                   <i className="fa-solid fa-trash me-2" />Borrar producto
                 </button>
-                <button onClick={() => validarProducto()} id='btnAceptar' className="btn btn-success">
+                <button disabled={!user.permisos.includes('editar')} onClick={() => validarProducto()} id='btnAceptar' className="btn btn-success">
                   <i className="fa-solid fa-floppy-disk me-2" />Guardar
                 </button>
               </div>

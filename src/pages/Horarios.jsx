@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { getChequeos, getChequeosHoy, getEmpleados, guardarHorario } from '../funciones'
 
-const Horarios = ({empleados}) => {
-  const [horarios, setHorarios] = useState([])
+const Horarios = ({ user, empleados, horarios, setHorarios }) => {
 
   const [idBarber, setIdBarber] = useState('')
   const [nombreBarber, setNombreBarber] = useState('')
@@ -75,16 +74,16 @@ const Horarios = ({empleados}) => {
           </thead>
           <tbody>
             {empleados.map((empleado) => (
-              (empleado.estatus == "B" || empleado.estatus == "P") ? null
+              (empleado.estatus != "A") ? null
                 : <tr onClick={() => openModal(empleado.id, empleado.nombre)} className='pointer' data-bs-toggle='modal' data-bs-target='#modal-horarios' key={empleado.id}>
                   <th className='text-start'>{empleado.nombre}</th>
-                  <td>{horarios.length > 0 ? horarios.find((horario) => horario.idBarber == empleado.id).lunIn == '00:00:00' ? <span className='text-danger'>DESCANSO</span> : horarios.find((horario) => horario.idBarber == empleado.id).lunIn.substring(0, 5) + ' - ' + horarios.find((horario) => horario.idBarber == empleado.id).lunOut.substring(0, 5) : ''}</td>
-                  <td>{horarios.length > 0 ? horarios.find((horario) => horario.idBarber == empleado.id).marIn == '00:00:00' ? <span className='text-danger'>DESCANSO</span> : horarios.find((horario) => horario.idBarber == empleado.id).marIn.substring(0, 5) + ' - ' + horarios.find((horario) => horario.idBarber == empleado.id).marOut.substring(0, 5) : ''}</td>
-                  <td>{horarios.length > 0 ? horarios.find((horario) => horario.idBarber == empleado.id).mieIn == '00:00:00' ? <span className='text-danger'>DESCANSO</span> : horarios.find((horario) => horario.idBarber == empleado.id).mieIn.substring(0, 5) + ' - ' + horarios.find((horario) => horario.idBarber == empleado.id).mieOut.substring(0, 5) : ''}</td>
-                  <td>{horarios.length > 0 ? horarios.find((horario) => horario.idBarber == empleado.id).jueIn == '00:00:00' ? <span className='text-danger'>DESCANSO</span> : horarios.find((horario) => horario.idBarber == empleado.id).jueIn.substring(0, 5) + ' - ' + horarios.find((horario) => horario.idBarber == empleado.id).jueOut.substring(0, 5) : ''}</td>
-                  <td>{horarios.length > 0 ? horarios.find((horario) => horario.idBarber == empleado.id).vieIn == '00:00:00' ? <span className='text-danger'>DESCANSO</span> : horarios.find((horario) => horario.idBarber == empleado.id).vieIn.substring(0, 5) + ' - ' + horarios.find((horario) => horario.idBarber == empleado.id).vieOut.substring(0, 5) : ''}</td>
-                  <td>{horarios.length > 0 ? horarios.find((horario) => horario.idBarber == empleado.id).sabIn == '00:00:00' ? <span className='text-danger'>DESCANSO</span> : horarios.find((horario) => horario.idBarber == empleado.id).sabIn.substring(0, 5) + ' - ' + horarios.find((horario) => horario.idBarber == empleado.id).sabOut.substring(0, 5) : ''}</td>
-                  <td>{horarios.length > 0 ? horarios.find((horario) => horario.idBarber == empleado.id).domIn == '00:00:00' ? <span className='text-danger'>DESCANSO</span> : horarios.find((horario) => horario.idBarber == empleado.id).domIn.substring(0, 5) + ' - ' + horarios.find((horario) => horario.idBarber == empleado.id).domOut.substring(0, 5) : ''}</td>
+                  <td>{horarios.length > 0 ? horarios.find((horario) => horario.idBarber == empleado.id).lunIn == '00:00:00' ? <span className='text-danger h6'>DESCANSO</span> : horarios.find((horario) => horario.idBarber == empleado.id).lunIn.substring(0, 5) + ' - ' + horarios.find((horario) => horario.idBarber == empleado.id).lunOut.substring(0, 5) : ''}</td>
+                  <td>{horarios.length > 0 ? horarios.find((horario) => horario.idBarber == empleado.id).marIn == '00:00:00' ? <span className='text-danger h6'>DESCANSO</span> : horarios.find((horario) => horario.idBarber == empleado.id).marIn.substring(0, 5) + ' - ' + horarios.find((horario) => horario.idBarber == empleado.id).marOut.substring(0, 5) : ''}</td>
+                  <td>{horarios.length > 0 ? horarios.find((horario) => horario.idBarber == empleado.id).mieIn == '00:00:00' ? <span className='text-danger h6'>DESCANSO</span> : horarios.find((horario) => horario.idBarber == empleado.id).mieIn.substring(0, 5) + ' - ' + horarios.find((horario) => horario.idBarber == empleado.id).mieOut.substring(0, 5) : ''}</td>
+                  <td>{horarios.length > 0 ? horarios.find((horario) => horario.idBarber == empleado.id).jueIn == '00:00:00' ? <span className='text-danger h6'>DESCANSO</span> : horarios.find((horario) => horario.idBarber == empleado.id).jueIn.substring(0, 5) + ' - ' + horarios.find((horario) => horario.idBarber == empleado.id).jueOut.substring(0, 5) : ''}</td>
+                  <td>{horarios.length > 0 ? horarios.find((horario) => horario.idBarber == empleado.id).vieIn == '00:00:00' ? <span className='text-danger h6'>DESCANSO</span> : horarios.find((horario) => horario.idBarber == empleado.id).vieIn.substring(0, 5) + ' - ' + horarios.find((horario) => horario.idBarber == empleado.id).vieOut.substring(0, 5) : ''}</td>
+                  <td>{horarios.length > 0 ? horarios.find((horario) => horario.idBarber == empleado.id).sabIn == '00:00:00' ? <span className='text-danger h6'>DESCANSO</span> : horarios.find((horario) => horario.idBarber == empleado.id).sabIn.substring(0, 5) + ' - ' + horarios.find((horario) => horario.idBarber == empleado.id).sabOut.substring(0, 5) : ''}</td>
+                  <td>{horarios.length > 0 ? horarios.find((horario) => horario.idBarber == empleado.id).domIn == '00:00:00' ? <span className='text-danger h6'>DESCANSO</span> : horarios.find((horario) => horario.idBarber == empleado.id).domIn.substring(0, 5) + ' - ' + horarios.find((horario) => horario.idBarber == empleado.id).domOut.substring(0, 5) : ''}</td>
                 </tr>
             ))}
           </tbody>
@@ -264,7 +263,7 @@ const Horarios = ({empleados}) => {
                 <button id='btnCerrarModalS' type='button' className="btn btn-secondary me-3 my-3" data-bs-dismiss='modal'>
                   <i className="fa-solid fa-xmark me-2" />Cerrar
                 </button>
-                <button onClick={() => guardarHorario(obtenerEmpleados, lunIn, lunOut, marIn, marOut, mieIn, mieOut, jueIn, jueOut, vieIn, vieOut, sabIn, sabOut, domIn, domOut, idBarber)} id='btnGuardar' className="btn btn-success">
+                <button disabled={!user.permisos.includes('editar')} onClick={() => guardarHorario(horarios, setHorarios, lunIn, lunOut, marIn, marOut, mieIn, mieOut, jueIn, jueOut, vieIn, vieOut, sabIn, sabOut, domIn, domOut, idBarber)} id='btnGuardar' className="btn btn-success">
                   <i className="fa-solid fa-floppy-disk me-2" />Guardar
                 </button>
               </div>

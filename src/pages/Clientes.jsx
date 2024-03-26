@@ -4,11 +4,12 @@ import Swal from 'sweetalert2'
 import { showAlert, addCliente, updateCliente, formatearFecha2 } from '../funciones'
 import { BarraBusqueda2 } from '../components/BarraBusqueda2'
 
-export const Clientes = ({ clientes, setClientes }) => {
+export const Clientes = ({user, clientes, setClientes }) => {
   const server = import.meta.env.VITE_SERVER
   const municipio = import.meta.env.VITE_MUNICIPIO
 
   const [clientesMostrados, setClientesMostrados] = useState([])
+  const [cuentas, setCuentas] = useState([])
   const [id, setId] = useState("")
   const [nombre, setNombre] = useState("")
   const [telefono, setTelefono] = useState("")
@@ -25,12 +26,34 @@ export const Clientes = ({ clientes, setClientes }) => {
   const checkMujer = document.getElementById('checkM')
 
   useEffect(() => {
+    getCuentas()
+  }, [])
+
+  useEffect(() => {
     setClientesMostrados(clientes)
   }, [clientes])
 
   useEffect(() => {
     setLoading(false)
   }, [clientesMostrados])
+
+  const getCuentas = () => {
+    axios.get(`${server}/cuentas`).then((response) => {
+      setCuentas(response.data);
+    }).then(() => {
+      cuentas.forEach(cuenta => {
+        moverCliente(cuenta.idCliente)
+      });
+    })
+  }
+
+  const moverCliente = (idCliente) => {
+    const indice = clientes.findIndex(cliente => cliente.id === idCliente);
+    const nuevoArreglo = [...clientes];
+    const [cliente] = nuevoArreglo.splice(indice, 1);
+    nuevoArreglo.splice(0, 0, cliente);
+    setClientes(nuevoArreglo);
+  };
 
   const openModal = (op, id, nombre, telefono, fechaNacimiento, genero, pts) => {
     setId(null)
@@ -123,7 +146,7 @@ export const Clientes = ({ clientes, setClientes }) => {
           <div className="col-md-4">
 
           </div>
-          
+
           <div className="col-md-4">
             <h6>Clientes registrados: {clientes.length}</h6>
           </div>
@@ -144,7 +167,7 @@ export const Clientes = ({ clientes, setClientes }) => {
                 </thead>
                 <tbody className='table-group-divider'>
                   {clientesMostrados.map((cliente, i) => (
-                      <tr key={cliente.id}>
+                    <tr key={cliente.id}>
                       <td className='text-start'>{cliente.nombre}</td>
                       <td>{cliente.telefono}</td>
                       <td>{cliente.pts}</td>
@@ -250,7 +273,7 @@ export const Clientes = ({ clientes, setClientes }) => {
                 <button id='btnCerrarModal' type='button' className="btn btn-secondary me-3" data-bs-dismiss='modal'>
                   <i className="fa-solid fa-xmark me-2" />Cancelar
                 </button>
-                <button onClick={() => validar()} id='btnAceptar' className="btn btn-success">
+                <button disabled={!user.permisos.includes('editar')} onClick={() => validar()} id='btnAceptar' className="btn btn-success">
                   <i className="fa-solid fa-floppy-disk me-2" />Guardar
                 </button>
               </div>

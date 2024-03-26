@@ -42,6 +42,7 @@
     border-radius: 100%;
     transition: border-radius 0.3s;
 }
+
 .imagen-circular:hover {
     border-radius: 0%;
 }
@@ -60,4 +61,9 @@
     image-rendering: auto;
     filter: blur(0.4px);
     transition: width 0.3s ease;
+}
+
+.custom-checkbox:checked {
+    border-color: #e9c527 !important;
+    background-color: #e9c527 !important;
 }
