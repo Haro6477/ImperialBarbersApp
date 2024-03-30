@@ -26,7 +26,7 @@ function App() {
 
   useEffect(() => {
     if (clientes.length == 0) getClientes()
-    if (empleados.length == 0) getEmpleados()
+    getEmpleados()
     if (horarios.length == 0) getHorarios()
     if (listFotos.length == 0) getFotos()
     if (productos.length == 0) getProductos()
