@@ -33,7 +33,7 @@ function App() {
     if (servicios.length == 0) getServicios()
     if (cobros.length == 0) getCobros()
     if (movimientosHoy.length == 0) getMovimientosHoy()
-    if (reporte === null) getReporte()
+    getReporte()
   }, [])
 
   const getClientes = () => {
