@@ -147,7 +147,11 @@ const Barbers = ({user, empleados, setEmpleados, listFotos, setListFotos }) => {
         axios.delete(instruccion).then(() => {
           showAlert("Empleado mandado al carajo", 'success')
         }).finally(() => {
-          getEmpleados();
+          const indiceEmpleado = empleados.findIndex((emp) => emp.id === id);
+          if (indiceEmpleado !== -1) {
+            empleados.splice(indiceEmpleado, 1);
+            setEmpleados([...empleados]);
+          }
         })
       } else {
         showAlert("No se eliminó ningún dato", "info")

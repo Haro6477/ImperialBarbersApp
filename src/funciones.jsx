@@ -532,6 +532,7 @@ export const updateProducto = (nombre, marca, linea, contenido, enVenta, suminis
     pts: pts,
     id: id,
   }).then((result) => {
+    console.log("Result update-producto", result)
     const indiceProducto = productos.findIndex((p) => p.id === id);
     const productosActualizado = [...productos]
     productosActualizado[indiceProducto] = result.data

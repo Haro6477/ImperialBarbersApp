@@ -25,14 +25,14 @@ function App() {
   const [listFotos, setListFotos] = useLocalStorage('listFotos', [])
 
   useEffect(() => {
-    if (clientes.length == 0) getClientes()
+    if (productos.length == 0) getClientes()
     getEmpleados()
-    if (horarios.length == 0) getHorarios()
-    if (listFotos.length == 0) getFotos()
-    if (productos.length == 0) getProductos()
-    if (servicios.length == 0) getServicios()
-    if (cobros.length == 0) getCobros()
-    if (movimientosHoy.length == 0) getMovimientosHoy()
+    getHorarios()
+    getFotos()
+    getProductos()
+    getServicios()
+    getCobros()
+    getMovimientosHoy()
     getReporte()
   }, [])
 
@@ -139,6 +139,13 @@ function App() {
         axios.put(`${server}/cambio-municipio`, {
           id: response.data[0].id,
           municipio: municipio
+        }).then(() => {
+          let indiceEmpleado = empleados.findIndex((emp) => emp.id == response.data[0].id)
+          if (indiceEmpleado !== -1) {
+            const nuevosEmpleados = [...empleados];
+            nuevosEmpleados[indiceEmpleado].municipio = municipio;
+            setEmpleados(nuevosEmpleados);
+          }
         })
         axios.get(`${server}/chequeo/${response.data[0].id}`).then((resGet) => {
           if (!resGet.data[0]) {
