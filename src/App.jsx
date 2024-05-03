@@ -25,7 +25,7 @@ function App() {
   const [listFotos, setListFotos] = useLocalStorage('listFotos', [])
 
   useEffect(() => {
-    if (productos.length == 0) getClientes()
+    getClientes()
     getEmpleados()
     getHorarios()
     getFotos()

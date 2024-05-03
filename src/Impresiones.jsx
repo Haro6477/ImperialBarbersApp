@@ -25,7 +25,7 @@ export const ImprimirTicket = (idCobro, descuento, subtotal, listaServicios = []
     if (!reeimpresion) conector.Pulso(49, 60, 120)
         .DeshabilitarElModoDeCaracteresChinos()
         .EstablecerAlineacion(ConectorPluginV3.ALINEACION_CENTRO)
-        .DescargarImagenDeInternetEImprimir('http://localhost:5173/darkLogoImperial.png', 0, 216)
+        .DescargarImagenDeInternetEImprimir('http://localhost:5174/darkLogoImperial.png', 0, 216)
     conector.Feed(1)
         .EscribirTexto("IMPERIAL BARBERS\n")
     if (municipio == 1) {
